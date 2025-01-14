@@ -31,12 +31,4 @@ namespace util
 		memory_pool_t& obj = _get_inst();
 		obj._mpool_max_cnt = max_cnt;	
 	}
-
-	void memory_pool_t::_free(base_node_t* node, mpool_cls_type_e cls_type)
-	{
-		memory_pool_t& obj = _get_inst();
-
-		auto find_iter = obj._mpool_cls.find(cls_type);
-		find_iter->second.push(node);
-	}
 }

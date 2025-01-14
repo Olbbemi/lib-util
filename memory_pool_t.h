@@ -78,17 +78,21 @@ namespace util
 		//static size_t get_mpool_size(mpool_cls_type_e cls_type = static_cast< mpool_cls_type_e>(0));
 
 		template<typename U>
+		[[nodiscard]]
 		static U* alloc_basic();
 
 		template<typename U>
 		static void free_basic(U* node);
 
 		template<typename U>
+		[[nodiscard]]
 		static U* alloc(mpool_cls_type_e cls_type);
 
-	private:
-		static void _free(base_node_t* node, mpool_cls_type_e cls_type);
+	public:
+		template<typename U>
+		static void _free(U* node, mpool_cls_type_e cls_type);
 
+		[[nodiscard]]
 		static memory_pool_t& _get_inst()
 		{
 			static memory_pool_t obj;
@@ -108,21 +112,14 @@ namespace util
 	template<typename U>
 	void memory_pool_t::free_basic(U* node)
 	{
-		if constexpr ( true == std::is_same<U, int8_t>::value
-					|| true == std::is_same<U, uint8_t>::value
-					|| true == std::is_same<U, int16_t>::value
-					|| true == std::is_same<U, uint16_t>::value
-					|| true == std::is_same<U, int32_t>::value
-					|| true == std::is_same<U, uint32_t>::value
-					|| true == std::is_same<U, int64_t>::value
-					|| true == std::is_same<U, uint64_t>::value )
-		{
-			memory_pool_t& obj = _get_inst();
-			obj._mpool_basic.push(reinterpret_cast<standard_type_u*>(node));
-			return;
-		}
+		static_assert(std::is_integral_v<U>
+			, "The first parameter of _free() function, must inherit from base_node_t or integral type.");
+		
+		memory_pool_t& obj = _get_inst();
+		obj._mpool_basic.push(reinterpret_cast<standard_type_u*>(node));
 
-		// error
+		// If U is invalid type, it must be compile time error occurred
+		// Then, not need error handling
 	}
 
 	template<typename U>
@@ -205,6 +202,17 @@ namespace util
 
 	done:
 		return dynamic_cast<U*>(node); // if node is nullptr, dynamic_cast<U*>(node) results also nullptr 
+	}
+
+	template<typename U>
+	void memory_pool_t::_free(U* node, mpool_cls_type_e cls_type)
+	{
+		static_assert(std::is_base_of_v<base_node_t, U>, "The first parameter of _free() function, must derive from base_node_t");
+
+		memory_pool_t& obj = _get_inst();
+
+		auto find_iter = obj._mpool_cls.find(cls_type);
+		find_iter->second.push(node);
 	}
 }
 
