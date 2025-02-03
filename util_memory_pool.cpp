@@ -8,8 +8,7 @@ namespace util
 {
 	long memory_pool_c::_get_osBit()
 	{
-		static long os_byte = sizeof(void*) == 4 ? 4 : 8;
-		return os_byte;
+		return sizeof(void*);
 	}
 
 	long memory_pool_c::_get_pageSize()

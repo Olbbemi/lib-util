@@ -8,7 +8,9 @@ namespace util
 	template <typename U>
 	void memory_pool_c::_free(U* obj)
 	{
-		base_node_c* base_obj = dynamic_cast<base_node_c*>(obj);
+		static_assert(std::is_base_of<base_node_c, U>::value, "U must inherit from base_node_c");
+
+		base_node_c* base_obj = static_cast<base_node_c*>(obj);
 		if(nullptr == base_obj)
 		{
 			// error
@@ -29,18 +31,15 @@ namespace util
 		size_t obj_size = sizeof(U);
 		_mpool.insert(std::make_pair(obj_size, base_obj));
 
+		assert(_mpool_alloc_cnt > 0 && "mpool_alloc_cnt went below zero");
 		_mpool_alloc_cnt--;
-		if(_mpool_alloc_cnt < 0)
-		{
-			// weird
-		}
 	}
 
 	template <typename U, typename... Args>
-	std::shared_ptr<U> memory_pool_c::alloc(std::string& grp_name, Args... args)
+	std::shared_ptr<U> memory_pool_c::alloc(const std::string& grp_name, Args... args)
 	{
 		// check inheritance
-		static_assert(std::is_base_of<base_node_c, U>::value, "think phrase");
+		static_assert(std::is_base_of<base_node_c, U>::value, "U must be derived from base_node_c");
 
 		base_node_c* base_node = nullptr;
 		size_t obj_size = sizeof(U);
@@ -62,7 +61,7 @@ namespace util
 				}
 
 				// calc position
-				_last_ptr = reinterpret_cast<void*>(reinterpret_cast<uint64_t>(_last_ptr) + adjust_size);
+				_last_ptr = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(_last_ptr) + adjust_size);
 				_mpool_cur_byte += adjust_size;
 			}
 			else

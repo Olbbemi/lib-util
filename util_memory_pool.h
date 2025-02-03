@@ -35,7 +35,7 @@ namespace util
 	{
 	public:
 		template<typename U, typename... Args>
-		std::shared_ptr<U> alloc(std::string& grp_name, Args... args);
+		std::shared_ptr<U> alloc(const std::string& grp_name, Args... args);
 
 	public:
 		memory_pool_c(std::string& grp_name, int max_cnt);
