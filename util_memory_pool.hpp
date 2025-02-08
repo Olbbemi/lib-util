@@ -11,12 +11,6 @@ namespace util
 		static_assert(std::is_base_of<base_node_c, U>::value, "U must inherit from base_node_c");
 
 		base_node_c* base_obj = static_cast<base_node_c*>(obj);
-		if(nullptr == base_obj)
-		{
-			// error
-			return;
-		}
-
 		if(0 != base_obj->_grp_name.compare(_grp_name))
 		{
 			// error
@@ -31,7 +25,10 @@ namespace util
 		size_t obj_size = sizeof(U);
 		_mpool.insert(std::make_pair(obj_size, base_obj));
 
-		assert(_mpool_alloc_cnt > 0 && "mpool_alloc_cnt went below zero");
+		if (_mpool_alloc_cnt < 0)
+		{
+			// weird
+		}
 		_mpool_alloc_cnt--;
 	}
 

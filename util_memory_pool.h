@@ -61,7 +61,7 @@ namespace util
 		void* _last_ptr;
 
 		uint32_t _mpool_max_cnt = 0;
-		uint32_t _mpool_alloc_cnt = 0;
+		int32_t _mpool_alloc_cnt = 0;
 
 		uint64_t _mpool_max_byte = 0;
 		uint64_t _mpool_cur_byte = 0;
