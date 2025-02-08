@@ -35,7 +35,7 @@ namespace util
 	{
 	public:
 		template<typename U, typename... Args>
-		std::shared_ptr<U> alloc(std::string& grp_name, Args... args);
+		std::shared_ptr<U> alloc(const std::string& grp_name, Args... args);
 
 	public:
 		memory_pool_c(std::string& grp_name, int max_cnt);
@@ -61,7 +61,7 @@ namespace util
 		void* _last_ptr;
 
 		uint32_t _mpool_max_cnt = 0;
-		uint32_t _mpool_alloc_cnt = 0;
+		int32_t _mpool_alloc_cnt = 0;
 
 		uint64_t _mpool_max_byte = 0;
 		uint64_t _mpool_cur_byte = 0;
