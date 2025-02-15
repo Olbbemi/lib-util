@@ -2,46 +2,49 @@
 #include <unistd.h>
 
 #include "util_memory_pool.h"
-#include "util_memory_pool.hpp"
+//#include "util_memory_pool.hpp"
 
 namespace util
 {
-	long memory_pool_c::_get_osBit()
+	uint32_t memory_pool_c::_get_osBit()
 	{
 		return sizeof(void*);
 	}
 
-	long memory_pool_c::_get_pageSize()
+	uint32_t memory_pool_c::_get_pageSize()
 	{
 		static long page_size = sysconf(_SC_PAGESIZE);
 		return page_size;
 	}
 
-	memory_pool_c::memory_pool_c(std::string& grp_name, int max_cnt)
+	uint32_t memory_pool_c::get_alloc_cnt_for_test()
 	{
-		long page_size = _get_pageSize();
+		std::lock_guard<std::mutex> pool_lock(_mpool_lock);
+		return _mpool.size();
+	}
+
+	memory_pool_c::memory_pool_c(const std::string& grp_name, int max_cnt)
+		: _grp_name(grp_name), _mpool_max_cnt(max_cnt)
+	{
+		uint32_t page_size = _get_pageSize();
+		_mpool_max_byte = page_size;
 		std::cout << "page_size: " << page_size << std::endl;
 
 		// mmap return_value is void*
 		void* _base_ptr = mmap(nullptr, page_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 		_last_ptr = _base_ptr;
 
-		_mpool_max_cnt = max_cnt;
-		_mpool_max_byte = page_size;
-		
 		_mpool_alloc_cnt = 0;
 		_mpool_cur_byte = 0;
-
-		_grp_name = std::move(grp_name);
 	}
 
 	memory_pool_c::~memory_pool_c()
 	{
-		/*for (int idx = 0; idx < _mpool_cur_cnt; idx++)
-			delete _vec_mpool[idx];
-
-		_vec_mpool.clear();*/
-
-		
+		_mpool.clear();
+		int result = munmap(_base_ptr, _mpool_max_byte);
+		if(-1 == result)
+		{
+			// check errno
+		}
 	}
 }

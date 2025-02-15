@@ -12,14 +12,14 @@
 namespace util
 {
 	/*
-	 * if a particular class use this memory-pool, muse inherit this class.
+	 * if a particular class use this memory-pool, must inherit this class.
 	 */
 	class base_node_c
 	{
 	public:
 		friend class memory_pool_c;
 
-		base_node_c(std::string& grp_name) : _grp_name(std::move(grp_name)) {};
+		base_node_c(const std::string& grp_name) : _grp_name(grp_name) {};
 		virtual ~base_node_c() = default;
 
 	private:
@@ -37,17 +37,22 @@ namespace util
 		template<typename U, typename... Args>
 		std::shared_ptr<U> alloc(const std::string& grp_name, Args... args);
 
+		uint32_t get_max_cnt() { return _mpool_max_cnt; };
+		uint32_t get_alloc_cnt() { return _mpool_alloc_cnt; };
+
+		// this func must call only for test
+	 	uint32_t get_alloc_cnt_for_test();
+
 	public:
-		memory_pool_c(std::string& grp_name, int max_cnt);
+		memory_pool_c(const std::string& grp_name, int max_cnt);
 		~memory_pool_c();
 
 		memory_pool_c(const memory_pool_c&) = delete;
 		memory_pool_c(memory_pool_c&&) = delete;
 
 	private:
-		static void _free(base_node_c* node, std::string& grp_name);
-		static long _get_pageSize();
-		static long _get_osBit();
+		static uint32_t _get_pageSize();
+		static uint32_t _get_osBit();
 	
 	private:
 		template<typename U>

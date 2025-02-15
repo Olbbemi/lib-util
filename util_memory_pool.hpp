@@ -25,11 +25,11 @@ namespace util
 		size_t obj_size = sizeof(U);
 		_mpool.insert(std::make_pair(obj_size, base_obj));
 
+		_mpool_alloc_cnt--;
 		if (_mpool_alloc_cnt < 0)
 		{
 			// weird
 		}
-		_mpool_alloc_cnt--;
 	}
 
 	template <typename U, typename... Args>
@@ -48,11 +48,11 @@ namespace util
 			if(_mpool.end() == find_iter)
 			{
 				base_node = reinterpret_cast<base_node_c*>(_last_ptr);
-				long adjust_size = 0;	
-				long os_byte = _get_osBit();
+				uint32_t adjust_size = 0;	
+				uint32_t os_byte = _get_osBit();
 				if(obj_size % os_byte != 0)
 				{
-					long quotient = obj_size / os_byte;
+					uint32_t quotient = obj_size / os_byte;
 					adjust_size = (quotient + 1) * os_byte;
 					_mpool_adjust_byte += (adjust_size - obj_size);
 				}
@@ -72,14 +72,14 @@ namespace util
 
 		if(0 != base_node->_grp_name.compare(grp_name))
 		{
-			// error
+			_free<base_node_c>(base_node);
 			return nullptr;
 		}
-
+		
 		// call placement new
 		base_node = new(base_node) U(grp_name, args...);
 
-		std::shared_ptr<U> wrapped_node(dynamic_cast<U*>(base_node), std::bind(&memory_pool_c::_free<U>, this, std::placeholders::_1));
+		std::shared_ptr<U> wrapped_node(static_cast<U*>(base_node), std::bind(&memory_pool_c::_free<U>, this, std::placeholders::_1));
 		return wrapped_node;
 	}
 }
