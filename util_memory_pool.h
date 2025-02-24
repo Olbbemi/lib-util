@@ -37,14 +37,17 @@ namespace util
 		template<typename U, typename... Args>
 		std::shared_ptr<U> alloc(const std::string& grp_name, Args... args);
 
-		uint32_t get_max_cnt() { return _mpool_max_cnt; };
+		//uint32_t get_max_cnt() { return _mpool_max_cnt; };
+		
 		uint32_t get_alloc_cnt() { return _mpool_alloc_cnt; };
-
-		// this func must call only for test
-	 	uint32_t get_alloc_cnt_for_test();
+	 	uint32_t get_pool_size(bool need_lock = false);
+		
+		uint64_t get_adjust_byte() { return _mpool_adjust_byte; };
+		uint64_t get_avail_max_byte() { return _mpool_avail_max_byte; };
+		uint64_t get_cur_byte() { return _mpool_cur_byte; };
 
 	public:
-		memory_pool_c(const std::string& grp_name, int max_cnt);
+		memory_pool_c(const std::string& grp_name, uint32_t use_page_cnt = 1);
 		~memory_pool_c();
 
 		memory_pool_c(const memory_pool_c&) = delete;
@@ -62,13 +65,14 @@ namespace util
 		std::string _grp_name;
 		std::unordered_multimap<size_t, base_node_c*> _mpool;
 
-		void* _base_ptr;
 		void* _last_ptr;
+		void* _base_ptr;
 
-		uint32_t _mpool_max_cnt = 0;
+		//uint32_t _mpool_max_cnt = 0;
 		int32_t _mpool_alloc_cnt = 0;
 
 		uint64_t _mpool_max_byte = 0;
+		uint64_t _mpool_avail_max_byte = 0;
 		uint64_t _mpool_cur_byte = 0;
 		uint64_t _mpool_adjust_byte = 0;
 

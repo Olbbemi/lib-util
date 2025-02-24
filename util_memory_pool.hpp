@@ -38,9 +38,28 @@ namespace util
 		// check inheritance
 		static_assert(std::is_base_of<base_node_c, U>::value, "U must be derived from base_node_c");
 
+		if(0 != _grp_name.compare(grp_name))
+		{
+			// error
+			return nullptr;
+		}
+
+		if(nullptr == _last_ptr)
+		{
+			// error
+			return nullptr;
+		}
+
 		base_node_c* base_node = nullptr;
 		size_t obj_size = sizeof(U);
 
+		if(_mpool_avail_max_byte < _mpool_cur_byte + obj_size)
+		{
+			// warn
+			return nullptr;
+		}
+
+		// alloc node
 		{
 			std::lock_guard<std::mutex> pool_lock(_mpool_lock);
 
@@ -58,8 +77,8 @@ namespace util
 				}
 
 				// calc position
-				_last_ptr = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(_last_ptr) + adjust_size);
-				_mpool_cur_byte += adjust_size;
+				_last_ptr = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(_last_ptr) + obj_size + adjust_size);
+				_mpool_cur_byte += (obj_size + adjust_size);
 			}
 			else
 			{
@@ -68,12 +87,6 @@ namespace util
 			}
 
 			_mpool_alloc_cnt++;
-		}
-
-		if(0 != base_node->_grp_name.compare(grp_name))
-		{
-			_free<base_node_c>(base_node);
-			return nullptr;
 		}
 		
 		// call placement new
