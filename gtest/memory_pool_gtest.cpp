@@ -234,7 +234,7 @@ TEST(MemoryPoolTest, AllocFreeWithMultiThread)
 
 	std::thread t1([&mpool]{
 
-		for(int i = 0; i < 10; i++)
+		for(int i = 0; i < 10000; i++)
 		{
 			{
 				std::shared_ptr<user_info> user_1 = mpool.alloc<user_info>(USER_GRP_NAME, g_uinfo_1.age, g_uinfo_1.u_name, g_uinfo_1.gender, g_uinfo_1.country, g_uinfo_1.address);
@@ -287,7 +287,10 @@ TEST(MemoryPoolTest, MaxAlloc)
 	uint64_t bigger = uinfo_size < rinfo_size ? rinfo_size : uinfo_size;
 	uint64_t smaller = uinfo_size < rinfo_size ? uinfo_size : rinfo_size;
 	uint32_t quotient = mpool_max_byte / bigger;
-	
+
+	// hope that quotient is never zero.
+	ASSERT_EQ(quotient, 0);
+
 	std::random_device rd;
 	std::mt19937 gen{rd()};
 	std::uniform_int_distribution<int> dist(1, quotient);
