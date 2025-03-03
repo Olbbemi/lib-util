@@ -289,7 +289,7 @@ TEST(MemoryPoolTest, MaxAlloc)
 	uint32_t quotient = mpool_max_byte / bigger;
 
 	// hope that quotient is never zero.
-	ASSERT_EQ(quotient, 0);
+	ASSERT_NE(quotient, 0);
 
 	std::random_device rd;
 	std::mt19937 gen{rd()};
@@ -331,7 +331,7 @@ TEST(MemoryPoolTest, DifferentGroupName)
 	 */
 	util::memory_pool_c mpool(USER_GRP_NAME);
 
-	std::shared_ptr<user_info> user= mpool.alloc<user_info>(ROOM_GRP_NAME, g_uinfo_1.age, g_uinfo_1.u_name, g_uinfo_1.gender, g_uinfo_1.country, g_uinfo_1.address);
+	std::shared_ptr<user_info> user = mpool.alloc<user_info>(ROOM_GRP_NAME, g_uinfo_1.age, g_uinfo_1.u_name, g_uinfo_1.gender, g_uinfo_1.country, g_uinfo_1.address);
 	std::shared_ptr<session_info> sess = mpool.alloc<session_info>(USER_GRP_NAME, g_sinfo_1.id, g_sinfo_1.s_name, g_sinfo_1.u_name, g_sinfo_1.role);
 
 	EXPECT_EQ(user, nullptr);
