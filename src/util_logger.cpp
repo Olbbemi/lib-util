@@ -198,12 +198,12 @@ void logger_c::write_rotate_file_log(LOG_LEVEL level, std::string log_str)
 
 	switch (level) 
 	{
-		case LOG_LEVEL::TRACE: 		_rotate_file_logger->trace(log_str);	break;
-		case LOG_LEVEL::DEBUG:		_rotate_file_logger->debug(log_str);	break;
-		case LOG_LEVEL::INFO:		_rotate_file_logger->info(log_str);		break;
-		case LOG_LEVEL::WARNING:	_rotate_file_logger->warn(log_str);		break;
-		case LOG_LEVEL::CRITICAL:	_rotate_file_logger->critical(log_str);	break;
-		case LOG_LEVEL::ERROR:		_rotate_file_logger->error(log_str);	break;
+		case LOG_LEVEL::TRACE: 		_rotate_file_logger->trace(log_str);    break;
+		case LOG_LEVEL::DEBUG:		_rotate_file_logger->debug(log_str);    break;
+		case LOG_LEVEL::INFO:		_rotate_file_logger->info(log_str);     break;
+		case LOG_LEVEL::WARNING:	_rotate_file_logger->warn(log_str);     break;
+		case LOG_LEVEL::CRITICAL:	_rotate_file_logger->critical(log_str); break;
+		case LOG_LEVEL::ERROR:		_rotate_file_logger->error(log_str);    break;
 	}
 }
 
@@ -214,11 +214,11 @@ void logger_c::wirte_daily_file_log(LOG_LEVEL level, std::string log_str)
 
 	switch (level) 
 	{
-		case LOG_LEVEL::TRACE: 		_daily_file_logger->trace(log_str);		break;
-		case LOG_LEVEL::DEBUG:		_daily_file_logger->debug(log_str);		break;
-		case LOG_LEVEL::INFO:		_daily_file_logger->info(log_str);		break;
-		case LOG_LEVEL::WARNING:	_daily_file_logger->warn(log_str);		break;
-		case LOG_LEVEL::CRITICAL:	_daily_file_logger->critical(log_str);	break;
-		case LOG_LEVEL::ERROR:		_daily_file_logger->error(log_str);		break;
+		case LOG_LEVEL::TRACE: 		_daily_file_logger->trace(log_str);    break;
+		case LOG_LEVEL::DEBUG:		_daily_file_logger->debug(log_str);    break;
+		case LOG_LEVEL::INFO:		_daily_file_logger->info(log_str);     break;
+		case LOG_LEVEL::WARNING:	_daily_file_logger->warn(log_str);     break;
+		case LOG_LEVEL::CRITICAL:	_daily_file_logger->critical(log_str); break;
+		case LOG_LEVEL::ERROR:		_daily_file_logger->error(log_str);    break;
 	}
 }
