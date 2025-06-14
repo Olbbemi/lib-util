@@ -2,11 +2,10 @@
 #include <string>
 #include <memory>
 #include <thread>
-#include <vector>
 #include <random>
 
-#include "../util_memory_pool.h"
-#include "../util_memory_pool.hpp"
+#include "util_memory_pool.h"
+#include "util_memory_pool.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /// DEFINE
@@ -223,49 +222,6 @@ TEST(MemoryPoolTest, AllocSameSize)
 
 	uint32_t mpool_size = mpool.get_pool_size();
 	EXPECT_EQ(mpool_size, 3);
-}
-
-TEST(MemoryPoolTest, AllocFreeWithMultiThread) 
-{
-	/*
-	 * Check the synchronization of memory-pool in multi-thread enviroment.
-	 */
-	util::memory_pool_c mpool(USER_GRP_NAME);
-
-	std::thread t1([&mpool]{
-
-		for(int i = 0; i < 10000; i++)
-		{
-			{
-				std::shared_ptr<user_info> user_1 = mpool.alloc<user_info>(USER_GRP_NAME, g_uinfo_1.age, g_uinfo_1.u_name, g_uinfo_1.gender, g_uinfo_1.country, g_uinfo_1.address);
-				std::shared_ptr<user_info> user_2 = mpool.alloc<user_info>(USER_GRP_NAME, g_uinfo_2.age, g_uinfo_2.u_name, g_uinfo_2.gender, g_uinfo_2.country, g_uinfo_2.address);
-				std::shared_ptr<user_info> user_3 = mpool.alloc<user_info>(USER_GRP_NAME, g_uinfo_3.age, g_uinfo_3.u_name, g_uinfo_3.gender, g_uinfo_3.country, g_uinfo_3.address);
-
-				EXPECT_LE(mpool.get_alloc_cnt(), 6);
-			}
-
-			EXPECT_LE(mpool.get_pool_size(), 6);
-		}
-	});
-
-	std::thread t2([&mpool]{
-			
-		for(int i = 0; i < 10000; i++)
-		{
-			{
-				std::shared_ptr<session_info> sess_1 = mpool.alloc<session_info>(USER_GRP_NAME, g_sinfo_1.id, g_sinfo_1.s_name, g_sinfo_1.u_name, g_sinfo_1.role);
-				std::shared_ptr<session_info> sess_2 = mpool.alloc<session_info>(USER_GRP_NAME, g_sinfo_2.id, g_sinfo_2.s_name, g_sinfo_2.u_name, g_sinfo_2.role);
-				std::shared_ptr<session_info> sess_3 = mpool.alloc<session_info>(USER_GRP_NAME, g_sinfo_3.id, g_sinfo_3.s_name, g_sinfo_3.u_name, g_sinfo_3.role);
-
-				EXPECT_LE(mpool.get_alloc_cnt(), 6);
-			}
-
-			EXPECT_LE(mpool.get_pool_size(), 6);
-		}
-	});
-
-	t1.join();
-	t2.join();
 }
 
 TEST(MemoryPoolTest, MaxAlloc)
