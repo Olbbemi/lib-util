@@ -46,7 +46,7 @@ using EVENT_FD = int;
 			bool shutdown = _shutdown.load();
 			if(true == shutdown)
 			{
-				U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "thread_pool is shutdown.");
+				U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] thread_pool is shutdown.", _identificaion);
 				return false;
 			}
 

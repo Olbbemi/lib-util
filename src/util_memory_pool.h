@@ -11,6 +11,10 @@
 
 namespace util
 {
+/* ====================================================================== */
+/* ========================== CLASS & STRUCT ============================ */
+/* ====================================================================== */
+
 	/*
 	 * if a particular class use this memory-pool, must inherit this class.
 	 */
@@ -37,8 +41,6 @@ namespace util
 		template<typename U, typename... Args>
 		std::shared_ptr<U> alloc(const std::string& grp_name, Args... args);
 
-		//uint32_t get_max_cnt() { return _mpool_max_cnt; };
-		
 		uint32_t get_alloc_cnt() { return _mpool_alloc_cnt; };
 	 	uint32_t get_pool_size(bool need_lock = false);
 		
@@ -68,7 +70,6 @@ namespace util
 		void* _last_ptr;
 		void* _base_ptr;
 
-		//uint32_t _mpool_max_cnt = 0;
 		int32_t _mpool_alloc_cnt = 0;
 
 		uint64_t _mpool_max_byte = 0;

@@ -75,12 +75,12 @@ bool thread_pool_c::create_pool(const std::string& identification, uint16_t max_
 		}
 		else
 		{
-			U_LOG_ROTATE_FILE(util::LOG_LEVEL::ERROR, "partial consumer thread isn't ready.");
+			U_LOG_ROTATE_FILE(util::LOG_LEVEL::ERROR, "[{}] partial consumer thread isn't ready.", _identificaion);
 			return false;
 		}
 	}
 
-	U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "all consumer thread is ready. count:{}", _max_cnt);
+	U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] all consumer thread is ready. count:{}", _identificaion, _max_cnt);
 	return true;
 }
 
@@ -110,14 +110,14 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal, uint1
 			bool shutdown = _shutdown.load();
 			if(true == shutdown)
 			{
-				U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "consumer thread_id({}) is shutdown.", _id);
+				U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] consumer thread_id({}) is shutdown.", _identificaion, _id);
 				break;
 			}
 
 			// this code never execute. (maybe)
 			if(true == _task_queue.empty())
 			{
-				U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING, "consumer thread_id({}) is wake up, but task_queue is empty.", _id);
+				U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING, "[{}] consumer thread_id({}) is wake up, but task_queue is empty.", _identificaion, _id);
 				continue;
 			}
 
@@ -148,7 +148,7 @@ void thread_pool_c::_task_producer_thread()
 		bool shutdown = _shutdown.load();
 		if(true == shutdown)
 		{
-			U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "producer thread is shutdown.");
+			U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] producer thread is shutdown.", _identificaion);
 			break;
 		}
 
@@ -196,7 +196,7 @@ void thread_pool_c::_task_producer_thread()
 				wait_time_ms = wait_max_time_ms;
 			}
 			else {
-				U_LOG_ROTATE_FILE(util::LOG_LEVEL::CRITICAL, "wait_cnt({}) is over the Red limit({}).", wait_cnt, Red.max);
+				U_LOG_ROTATE_FILE(util::LOG_LEVEL::CRITICAL, "[{}] wait_cnt({}) is over the Red limit({}).", _identificaion, wait_cnt, Red.max);
 			}
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(wait_time_ms));
