@@ -46,7 +46,7 @@ using EVENT_FD = int;
 			bool shutdown = _shutdown.load();
 			if(true == shutdown)
 			{
-				U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] thread_pool is shutdown.", _identificaion);
+				U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] thread_pool is shutdown.", _identification);
 				return false;
 			}
 
@@ -74,7 +74,7 @@ using EVENT_FD = int;
 		uint16_t _max_cnt;
 		EVENT_FD _event_fd;
 
-		std::string _identificaion;
+		std::string _identification;
 		std::vector<int64_t> _consumer_elapsed_time;
 		std::vector<std::thread> _task_consumer_pool;
 		std::queue<std::function<void()>> _task_queue;
