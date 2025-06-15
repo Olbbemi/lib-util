@@ -113,8 +113,8 @@ namespace util
 		bool initialize(const std::string& tag, VARIANT_SINK& sink_data);
 		
 		void write_console_log(LOG_LEVEL level, std::string log_str);
-		void write_rotate_file_log(LOG_LEVEL leve, std::string log_strl);
-		void wirte_daily_file_log(LOG_LEVEL level, std::string log_str);
+		void write_rotate_file_log(LOG_LEVEL level, std::string log_str);
+		void write_daily_file_log(LOG_LEVEL level, std::string log_str);
 	
 		logger_c() = default;
 		~logger_c() = default;
@@ -185,7 +185,7 @@ inline void U_LOG_DAILY_FILE(util::LOG_LEVEL level, const std::string& format, A
 	if(nullptr == logger_obj)
 		return;
 
-	logger_obj->write_rotate_file_log(level, fmt::format(format, std::forward<Args>(args)...));
+	logger_obj->write_daily_file_log(level, fmt::format(format, std::forward<Args>(args)...));
 }
 
 /* =============== network logger =============== */

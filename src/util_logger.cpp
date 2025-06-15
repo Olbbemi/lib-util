@@ -207,7 +207,7 @@ void logger_c::write_rotate_file_log(LOG_LEVEL level, std::string log_str)
 	}
 }
 
-void logger_c::wirte_daily_file_log(LOG_LEVEL level, std::string log_str)
+void logger_c::write_daily_file_log(LOG_LEVEL level, std::string log_str)
 {
 	if(nullptr == _daily_file_logger)
 		return;
