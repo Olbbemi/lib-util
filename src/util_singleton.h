@@ -13,6 +13,9 @@ namespace util
 	class singleton_c
 	{
 	public:
+		singleton_c() = default;
+		~singleton_c() = default;
+
 		static Class* get_instance();
 		static bool release(Class* obj);
 
@@ -24,10 +27,6 @@ namespace util
 			return false;
 		}
 #endif
-
-	private:
-		singleton_c() = default;
-		~singleton_c() = default;
 
 	private:
 		static Class* _obj;
