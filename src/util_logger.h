@@ -122,9 +122,9 @@ namespace util
 	public:
 		bool initialize(const std::string& tag, VARIANT_SINK& sink_data);
 		
-		void write_console_log(LOG_LEVEL level, std::string log_str);
-		void write_rotate_file_log(LOG_LEVEL level, std::string log_str);
-		void write_daily_file_log(LOG_LEVEL level, std::string log_str);
+		void write_console_log(const LOG_LEVEL level, std::string log_str);
+		void write_rotate_file_log(const LOG_LEVEL level, std::string log_str);
+		void write_daily_file_log(const LOG_LEVEL level, std::string log_str);
 	
 		logger_c() = default;
 		~logger_c() = default;
@@ -169,7 +169,7 @@ struct fmt::formatter<std::thread::id> {
 
 /* =============== util logger =============== */
 template <typename... Args>
-inline void U_LOG_CONSOLE(util::LOG_LEVEL level, const std::string& format, Args&&... args)
+inline void U_LOG_CONSOLE(const util::LOG_LEVEL level, const std::string& format, Args&&... args)
 {
 	util::logger_c* logger_obj = internal::get_logger_obj(util::UTIL_LOGGER);	
 	if(nullptr == logger_obj)
@@ -179,7 +179,7 @@ inline void U_LOG_CONSOLE(util::LOG_LEVEL level, const std::string& format, Args
 }
 
 template <typename... Args>	
-inline void U_LOG_ROTATE_FILE(util::LOG_LEVEL level, const std::string& format, Args&&... args)
+inline void U_LOG_ROTATE_FILE(const util::LOG_LEVEL level, const std::string& format, Args&&... args)
 {
 	util::logger_c* logger_obj = internal::get_logger_obj(util::UTIL_LOGGER);
 	if(nullptr == logger_obj)
@@ -189,7 +189,7 @@ inline void U_LOG_ROTATE_FILE(util::LOG_LEVEL level, const std::string& format, 
 }
 
 template <typename... Args>	
-inline void U_LOG_DAILY_FILE(util::LOG_LEVEL level, const std::string& format, Args&&... args)
+inline void U_LOG_DAILY_FILE(const util::LOG_LEVEL level, const std::string& format, Args&&... args)
 {
 	util::logger_c* logger_obj = internal::get_logger_obj(util::UTIL_LOGGER);
 	if(nullptr == logger_obj)

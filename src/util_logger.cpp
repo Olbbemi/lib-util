@@ -13,13 +13,18 @@
 using namespace util;
 
 /* ====================================================================== */
+/* ========================== DEFINE & ENUM ============================= */
+/* ====================================================================== */
+const std::uint16_t Q_SIZE = 8192;
+const std::uint16_t THREAD_CNT = 1;
+
+/* ====================================================================== */
 /* ========================== GLOBAL & STATIC =========================== */
 /* ====================================================================== */
-
 std::set<std::string> logger_mgr::_tag_checker{UTIL_LOGGER, NETWORK_LOGGER};
 std::map< std::string, std::unique_ptr<logger_c> > logger_mgr::_map_logger_obj{};
 
-static spdlog::level::level_enum convert_spdlog_level(LOG_LEVEL level)
+static spdlog::level::level_enum convert_spdlog_level(const LOG_LEVEL level)
 {
 	switch(level)
 	{
@@ -41,7 +46,7 @@ static spdlog::level::level_enum convert_spdlog_level(LOG_LEVEL level)
 /* =============== logger_mgr class =============== */
 bool logger_mgr::init_logger(const std::string& tag, std::vector<VARIANT_SINK>& vec_logger_data)
 {
-	auto find_iter = _tag_checker.find(tag);	
+	std::set<std::string>::const_iterator find_iter = _tag_checker.find(tag);
 	if(find_iter == _tag_checker.end()) {
 		return false;
 	}
@@ -69,7 +74,7 @@ void logger_mgr::release_logger()
 
 logger_c* logger_mgr::_find_logger(const std::string& tag)
 {
-	auto find_iter = _map_logger_obj.find(tag);
+	std::map< std::string, std::unique_ptr<logger_c> >::const_iterator find_iter = _map_logger_obj.find(tag);
 	if(find_iter == _map_logger_obj.end())
 		return nullptr;
 
@@ -85,7 +90,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	console_sink_data_st* console_data = std::get_if<console_sink_data_st>(&sink_data);
 	if(nullptr != console_data)
 	{
-		_console_thread_pool = std::make_shared<spdlog::details::thread_pool>(8192, 1);
+		_console_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
 		std::string logger_name = tag + std::string("_console");
 		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
@@ -110,7 +115,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	rotate_file_sink_data_st* rotate_file_data = std::get_if<rotate_file_sink_data_st>(&sink_data);
 	if(nullptr != rotate_file_data)
 	{
-		_rotate_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(8192, 1);
+		_rotate_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
 		std::string logger_name = tag + std::string("_rotate_file");
 		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
@@ -143,7 +148,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	daily_file_sink_data_st* daily_file_data = std::get_if<daily_file_sink_data_st>(&sink_data);
 	if(nullptr != daily_file_data)
 	{
-		_daily_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(8192, 1);
+		_daily_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
 		std::string logger_name = tag + std::string("_daily_file");
 		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
@@ -175,7 +180,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	return false;
 }
 
-void logger_c::write_console_log(LOG_LEVEL level, std::string log_str)
+void logger_c::write_console_log(const LOG_LEVEL level, std::string log_str)
 {
 	if(nullptr == _console_logger)
 		return;
@@ -191,7 +196,7 @@ void logger_c::write_console_log(LOG_LEVEL level, std::string log_str)
 	}
 }
 
-void logger_c::write_rotate_file_log(LOG_LEVEL level, std::string log_str)
+void logger_c::write_rotate_file_log(const LOG_LEVEL level, std::string log_str)
 {
 	if(nullptr == _rotate_file_logger)
 		return;
@@ -207,7 +212,7 @@ void logger_c::write_rotate_file_log(LOG_LEVEL level, std::string log_str)
 	}
 }
 
-void logger_c::write_daily_file_log(LOG_LEVEL level, std::string log_str)
+void logger_c::write_daily_file_log(const LOG_LEVEL level, std::string log_str)
 {
 	if(nullptr == _daily_file_logger)
 		return;
