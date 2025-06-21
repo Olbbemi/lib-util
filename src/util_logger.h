@@ -98,6 +98,16 @@ namespace util
 
 		friend inline logger_c* internal::get_logger_obj(const std::string& TAG);
 
+	public:
+		logger_mgr() = delete;
+		~logger_mgr() = delete;
+
+		logger_mgr(const logger_mgr& rhs) = delete;
+		logger_mgr& operator=(const logger_mgr& rhs) = delete;
+
+		logger_mgr(logger_mgr&& rhs) = delete;
+		logger_mgr& operator=(logger_mgr&& rhs) = delete;
+
 	private:
 		static logger_c* _find_logger(const std::string& tag);
 

@@ -13,11 +13,18 @@ namespace util
 	class singleton_c
 	{
 	public:
+		static Class* get_instance();
+		static bool release(Class* obj);
+
+	public:
 		singleton_c() = default;
 		~singleton_c() = default;
 
-		static Class* get_instance();
-		static bool release(Class* obj);
+		singleton_c(const singleton_c& rhs) = delete;
+		singleton_c& operator=(const singleton_c& rhs) = delete;
+
+		singleton_c(singleton_c&& rhs) = delete;
+		singleton_c& operator=(singleton_c&& rhs) = delete;
 
 #ifdef UNIT_TEST
 		static bool is_released() {

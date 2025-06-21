@@ -24,7 +24,16 @@ namespace util
 		friend class memory_pool_c;
 
 		base_node_c(const std::string& grp_name) : _grp_name(grp_name) {};
+
+	public:
+		base_node_c() = delete;
 		virtual ~base_node_c() = default;
+
+		base_node_c(const base_node_c& rsh) = delete;
+		base_node_c& operator=(const base_node_c& rhs) = delete;
+
+		base_node_c(base_node_c&& rsh) = delete;
+		base_node_c& operator=(base_node_c&& rhs) = delete;
 
 	private:
 		std::string _grp_name;
@@ -52,8 +61,13 @@ namespace util
 		memory_pool_c(const std::string& grp_name, uint32_t use_page_cnt = 1);
 		~memory_pool_c();
 
+		memory_pool_c() = delete;
+
 		memory_pool_c(const memory_pool_c&) = delete;
+		memory_pool_c& operator=(const memory_pool_c& rhs) = delete;
+
 		memory_pool_c(memory_pool_c&&) = delete;
+		memory_pool_c& operator=(memory_pool_c&& rhs) = delete;
 
 	private:
 		static uint32_t _get_pageSize();

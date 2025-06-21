@@ -31,12 +31,6 @@ using EVENT_FD = int;
 	class thread_pool_c
 	{
 	public:
-		thread_pool_c() = default;
-		~thread_pool_c();
-
-		thread_pool_c(const thread_pool_c&& rhs) = delete;
-
-	public:
 		bool create_pool(const std::string& identification, uint16_t max_cnt);
 
 		template<typename Func, typename... Args>
@@ -63,6 +57,16 @@ using EVENT_FD = int;
 			ssize_t result = write(_event_fd, &value, sizeof(value));
 			return true;
 		}
+
+	public:
+		thread_pool_c() = default;
+		~thread_pool_c();
+
+		thread_pool_c(const thread_pool_c&& rhs) = delete;
+		thread_pool_c& operator=(const thread_pool_c& rhs) = delete;
+
+		thread_pool_c(thread_pool_c&& rhs) = delete;
+		thread_pool_c& operator=(thread_pool_c&& rhs) = delete;
 
 	private:
 		void _task_consumer_thread(std::promise<void> ready_signal, uint16_t index);
