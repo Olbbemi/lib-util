@@ -51,6 +51,7 @@ thread_pool_c::~thread_pool_c()
 bool thread_pool_c::create_pool(const std::string& identification, uint16_t max_cnt)
 {
 	_shutdown = false;
+	_ready_task = false;
 	_identification = identification;
 	_max_cnt = max_cnt;
 
@@ -105,9 +106,15 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal, uint1
 			std::unique_lock<std::mutex> lock_obj(_task_mutex);
 
 			_consumer_mgr[_id].exchange(true);
-			_task_cv.wait(lock_obj);
+			_task_cv.wait(lock_obj, [&]()
+			{
+				bool shutdown = _shutdown.load();
+				bool ready_task = _ready_task.load();
 
-			//
+				return shutdown | ready_task;
+			});
+
+			// thread shutdown.
 			bool shutdown = _shutdown.load();
 			if(true == shutdown)
 			{
@@ -115,8 +122,16 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal, uint1
 				break;
 			}
 
-			// this code never execute. (maybe)
-			if(true == _task_queue.empty())
+			// handle task.
+			bool ready_task = _ready_task.load();
+			if(false == ready_task)
+			{
+				U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING, "[{}] consumer thread_id({}) is wake up, but ready_task is false.", _identification, _id);
+				continue;
+			}
+
+			_ready_task.exchange(false);
+			if(true == _task_queue.empty()) // this code never execute. (maybe)
 			{
 				U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING, "[{}] consumer thread_id({}) is wake up, but task_queue is empty.", _identification, _id);
 				continue;
@@ -143,7 +158,7 @@ void thread_pool_c::_task_producer_thread()
 	while(true)
 	{
 		uint64_t value = 0;
-		static_assert(sizeof(value) == FD_EVENT_TYPE_SIZE, "");
+		static_assert(sizeof(value) == FD_EVENT_TYPE_SIZE, "[ERROR] value-size mismatch for write(event_fd). need_size: FD_EVENT_TYPE_SIZE");
 		ssize_t result = read(_event_fd, &value, sizeof(value));
 
 		bool shutdown = _shutdown.load();
@@ -179,6 +194,7 @@ void thread_pool_c::_task_producer_thread()
 			// try to awake consumer thread.
 			if(true == _check_exec_right_now())
 			{
+				_ready_task.exchange(true);
 				_task_cv.notify_one();
 				break;
 			}

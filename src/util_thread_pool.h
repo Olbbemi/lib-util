@@ -74,7 +74,7 @@ using EVENT_FD = int;
 		bool _check_exec_right_now();
 
 	private:
-		std::atomic_bool _shutdown;
+		std::atomic_bool _shutdown, _ready_task;
 		uint16_t _max_cnt;
 		EVENT_FD _event_fd;
 
