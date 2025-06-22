@@ -70,6 +70,12 @@ jobs:
           ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 \
             --out-dir bw-output \
             cmake --build build
+
+      - name: Print compile_commands.json
+        run: cat build/compile_commands.json
+      
+      - name: List source files
+        run: ls -R
  
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
