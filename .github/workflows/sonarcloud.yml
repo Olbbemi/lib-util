@@ -76,6 +76,9 @@ jobs:
       
       - name: List source files
         run: ls -R
+
+      - name: Check if build dir exists
+        run: ls -al build/
  
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
