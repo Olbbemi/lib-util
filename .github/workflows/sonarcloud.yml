@@ -93,11 +93,10 @@ jobs:
             -Dsonar.sources=src
             -Dsonar.tests=gtest
             -Dsonar.cfamily.cache.enabled=false
-            -Dsonar.cfamily.build-wrapper-output=bw-output
+            -Dsonar.cfamily.compile-commands=build/compile_commands.json
             -Dsonar.projectBaseDir=.
             -X
 
-            #-Dsonar.cfamily.compile-commands=build/compile_commands.json
             #-Dsonar.sources=.,src,gtest
             #-Dsonar.inclusions=src/**/*.cpp,gtest/**/*.cpp
             
