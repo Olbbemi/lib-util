@@ -1,0 +1,6 @@
+[submodule "external/googletest"]
+	path = external/googletest
+	url = git@github.com:Olbbemi/googletest.git
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = git@github.com:Olbbemi/spdlog.git

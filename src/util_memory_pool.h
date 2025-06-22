@@ -11,6 +11,10 @@
 
 namespace util
 {
+/* ====================================================================== */
+/* ========================== CLASS & STRUCT ============================ */
+/* ====================================================================== */
+
 	/*
 	 * if a particular class use this memory-pool, must inherit this class.
 	 */
@@ -20,7 +24,16 @@ namespace util
 		friend class memory_pool_c;
 
 		base_node_c(const std::string& grp_name) : _grp_name(grp_name) {};
+
+	public:
+		base_node_c() = delete;
 		virtual ~base_node_c() = default;
+
+		base_node_c(const base_node_c& rsh) = delete;
+		base_node_c& operator=(const base_node_c& rhs) = delete;
+
+		base_node_c(base_node_c&& rsh) = delete;
+		base_node_c& operator=(base_node_c&& rhs) = delete;
 
 	private:
 		std::string _grp_name;
@@ -37,8 +50,6 @@ namespace util
 		template<typename U, typename... Args>
 		std::shared_ptr<U> alloc(const std::string& grp_name, Args... args);
 
-		//uint32_t get_max_cnt() { return _mpool_max_cnt; };
-		
 		uint32_t get_alloc_cnt() { return _mpool_alloc_cnt; };
 	 	uint32_t get_pool_size(bool need_lock = false);
 		
@@ -50,8 +61,13 @@ namespace util
 		memory_pool_c(const std::string& grp_name, uint32_t use_page_cnt = 1);
 		~memory_pool_c();
 
+		memory_pool_c() = delete;
+
 		memory_pool_c(const memory_pool_c&) = delete;
+		memory_pool_c& operator=(const memory_pool_c& rhs) = delete;
+
 		memory_pool_c(memory_pool_c&&) = delete;
+		memory_pool_c& operator=(memory_pool_c&& rhs) = delete;
 
 	private:
 		static uint32_t _get_pageSize();
@@ -68,7 +84,6 @@ namespace util
 		void* _last_ptr;
 		void* _base_ptr;
 
-		//uint32_t _mpool_max_cnt = 0;
 		int32_t _mpool_alloc_cnt = 0;
 
 		uint64_t _mpool_max_byte = 0;
