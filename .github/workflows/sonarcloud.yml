@@ -48,6 +48,12 @@ jobs:
       - name: Install dependencies
         run: sudo apt update && sudo apt install -y build-essential cmake
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Download build-wrapper
         run: |
           curl -sSLo build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
