@@ -80,10 +80,6 @@ jobs:
       - name: Check if build dir exists
         run: ls -al build/
 
-      - name: Patch compile_commands.json path for SonarCloud container
-        run: |
-          sed -i "s|/home/runner/work/lib-util/lib-util|/github/workspace|g" build/compile_commands.json
-
       - name: Print working directory
         run: pwd
       
@@ -109,7 +105,7 @@ jobs:
             -Dsonar.cfamily.cache.enabled=false
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
             -Dsonar.cfamily.exclusions=**/build/external/**
-            -Dsonar.projectBaseDir=.
+            -Dsonar.projectBaseDir=build
             -X
 
             #-Dsonar.sources=.,src,gtest
