@@ -92,10 +92,10 @@ jobs:
             -Dsonar.organization=olbbemi        
             -Dsonar.sources=src
             -Dsonar.tests=gtest
-            -Dsonar.inclusions=src/**/*.cpp,gtest/**/*.cpp
+            -Dsonar.inclusions=src/*.cpp,gtest/*.cpp
             -Dsonar.cfamily.cache.enabled=false
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
-            -Dsonar.cfamily.exclusions=**/build/**
+            -Dsonar.cfamily.exclusions=**/build/external/**
             -Dsonar.projectBaseDir=.
             -X
 
