@@ -83,6 +83,12 @@ jobs:
       - name: Patch compile_commands.json path for SonarCloud container
         run: |
           sed -i "s|/home/runner/work/lib-util/lib-util|/github/workspace|g" build/compile_commands.json
+
+      - name: Print working directory
+        run: pwd
+      
+      - name: Print environment
+        run: env
  
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
