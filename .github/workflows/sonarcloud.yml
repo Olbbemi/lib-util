@@ -79,6 +79,10 @@ jobs:
 
       - name: Check if build dir exists
         run: ls -al build/
+
+      - name: Patch compile_commands.json for container path
+        run: |
+          sed -i "s|/home/runner/work/lib-util/lib-util/build|$(pwd)/build|g" build/compile_commands.json
  
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
