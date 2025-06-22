@@ -85,6 +85,9 @@ jobs:
       
       - name: Print environment
         run: env
+
+      - name: Fix compile_commands.json paths
+        run: sed -i "s|/home/runner/work/lib-util/lib-util|/github/workspace|g" build/compile_commands.json
  
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
@@ -104,8 +107,6 @@ jobs:
             -Dsonar.inclusions=src/*.cpp,gtest/*.cpp
             -Dsonar.cfamily.cache.enabled=false
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
-            -Dsonar.cfamily.exclusions=**/build/external/**
-            -Dsonar.projectBaseDir=build
             -X
 
             #-Dsonar.sources=.,src,gtest
