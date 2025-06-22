@@ -85,9 +85,6 @@ jobs:
       
       - name: Print environment
         run: env
-
-      - name: Fix compile_commands.json paths
-        run: sed -i "s|/home/runner/work/lib-util/lib-util|/github/workspace|g" build/compile_commands.json
  
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
