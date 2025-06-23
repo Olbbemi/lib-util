@@ -101,6 +101,7 @@ jobs:
             -Dsonar.organization=olbbemi
             -Dsonar.cfamily.cache.enabled=false
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
+            -Dsonar.sources=src,gtest
             #-Dsonar.sources=.,src,gtest
             #
             
