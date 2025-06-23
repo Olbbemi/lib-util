@@ -102,6 +102,7 @@ jobs:
             -Dsonar.cfamily.cache.enabled=false
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
             -Dsonar.sources=src,gtest
+            -Dsonar.cfamily.pathMappings="/__w/lib-util/lib-util=/home/runner/work/lib-util/lib-util"
             #-Dsonar.sources=.,src,gtest
             #
             
