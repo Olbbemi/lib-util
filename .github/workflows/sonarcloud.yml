@@ -102,7 +102,7 @@ jobs:
             -Dsonar.cfamily.cache.enabled=false
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
             -Dsonar.sources=src,gtest
-            -Dsonar.cfamily.pathMappings="/home/runner/work/lib-util/lib-util=/github/workspace"
+            -Dsonar.cfamily.pathMappings="/github/workspace=/home/runner/work/lib-util/lib-util"
             -X
             #-Dsonar.sources=.,src,gtest
             #
