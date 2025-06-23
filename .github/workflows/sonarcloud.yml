@@ -90,6 +90,9 @@ jobs:
         run: |
           jq 'map(.directory |= sub("^/home/runner/work/lib-util/lib-util"; "."))' build/compile_commands.json > build/compile_commands_fixed.json
           mv build/compile_commands_fixed.json build/compile_commands.json
+
+      - name: Print fix_compile_commands.json
+        run: cat build/compile_commands.json
  
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
@@ -109,6 +112,7 @@ jobs:
             -Dsonar.inclusions=src/*.cpp,gtest/*.cpp
             -Dsonar.cfamily.cache.enabled=false
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
+            -w /github/workspace
             -X
 
             #-Dsonar.sources=.,src,gtest
