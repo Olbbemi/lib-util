@@ -85,18 +85,6 @@ jobs:
       
       - name: Print environment
         run: env
-
-      - name: Fix compile_commands.json paths
-        run: |
-          jq 'map(
-            .directory = "/github/workspace/build" |
-            .command |= sub("/home/runner/work/lib-util/lib-util"; "/github/workspace") |
-            .file |= sub("/home/runner/work/lib-util/lib-util"; "/github/workspace")
-          )' build/compile_commands.json > build/compile_commands_fixed.json
-          mv build/compile_commands_fixed.json build/compile_commands.json
-
-      - name: Print fix_compile_commands.json
-        run: cat build/compile_commands.json
  
       - name: Analyze with SonarCloud
         # You can pin the exact commit or the version.
@@ -111,12 +99,6 @@ jobs:
             # mandatory
             -Dsonar.projectKey=Olbbemi_lib-util
             -Dsonar.organization=olbbemi        
-            -Dsonar.sources=src
-            -Dsonar.tests=gtest
-            -Dsonar.inclusions=src/*.cpp,gtest/*.cpp
-            -Dsonar.cfamily.cache.enabled=false
-            -Dsonar.cfamily.compile-commands=build/compile_commands.json
-            -X
 
             #-Dsonar.sources=.,src,gtest
             #
