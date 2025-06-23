@@ -21,8 +21,8 @@ TEST(ThreadPoolTest, MemoryAdjustInAlloc)
 	util::thread_pool_c thread_pool;
 	thread_pool.create_pool("", 10);
 
-	int data_1 = 1;
-	int* ptr = new int[10];
+	int data_1 = 0;
+	int* ptr_1 = new int[10];
 
 	int test_data = 0;
 	auto lambda = [&test_data](int data)
