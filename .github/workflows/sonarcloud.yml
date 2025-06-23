@@ -88,7 +88,7 @@ jobs:
 
       - name: Fix compile_commands.json paths
         run: |
-          jq 'map(.directory |= sub("^/home/runner/work/lib-util/lib-util"; "."))' build/compile_commands.json > build/compile_commands_fixed.json
+          jq 'map(.directory |= sub("^/home/runner/work/lib-util/lib-util"; "/github/workspace"))' build/compile_commands.json > build/compile_commands_fixed.json
           mv build/compile_commands_fixed.json build/compile_commands.json
 
       - name: Print fix_compile_commands.json
