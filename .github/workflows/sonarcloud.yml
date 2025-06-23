@@ -112,7 +112,6 @@ jobs:
             -Dsonar.inclusions=src/*.cpp,gtest/*.cpp
             -Dsonar.cfamily.cache.enabled=false
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
-            -w /github/workspace
             -X
 
             #-Dsonar.sources=.,src,gtest
