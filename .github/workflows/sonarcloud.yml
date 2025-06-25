@@ -54,7 +54,9 @@ jobs:
           unzip build-wrapper-linux-x86.zip
 
       - name: Run CMake configure
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release \
+                            -DCMAKE_CXX_STANDARD=17 \
+                            -DCMAKE_CXX_STANDARD_REQUIRED=ON
 
       - name: Run CMake build (with build-wrapper)
         run: |
