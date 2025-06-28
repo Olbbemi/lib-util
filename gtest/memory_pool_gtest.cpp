@@ -66,7 +66,7 @@ class user_info : public util::base_node_c
 		user_info() = delete;
 
 	public:
-		int _age; 			    // mandatory
+		int _age;               // mandatory
 		std::string _user_name; // mandatory
 		std::string _gender;    // mandatory
 		std::string _country;
