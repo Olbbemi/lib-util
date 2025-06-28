@@ -102,17 +102,17 @@ class room_info : public util::base_node_c
 /* ====================================================================== */
 /* ========================== GLOBAL & STATIC =========================== */
 /* ====================================================================== */
-uinfo g_uinfo_1{10, "kim", "M", "", ""};
-uinfo g_uinfo_2{20, "lee", "W", "US", ""};
-uinfo g_uinfo_3{30, "jin", "W", "KR", "Busan"};
+const uinfo g_uinfo_1{10, "kim", "M", "", ""};
+const uinfo g_uinfo_2{20, "lee", "W", "US", ""};
+const uinfo g_uinfo_3{30, "jin", "W", "KR", "Busan"};
 
-sinfo g_sinfo_1{1, "sess_1", g_uinfo_1.u_name, "speaker"};
-sinfo g_sinfo_2{2, "sess_2", g_uinfo_2.u_name, "listener"};
-sinfo g_sinfo_3{3, "sess_3", g_uinfo_3.u_name, "-"};
+const sinfo g_sinfo_1{1, "sess_1", g_uinfo_1.u_name, "speaker"};
+const sinfo g_sinfo_2{2, "sess_2", g_uinfo_2.u_name, "listener"};
+const sinfo g_sinfo_3{3, "sess_3", g_uinfo_3.u_name, "-"};
 
-rinfo g_rinfo_1(101, "room_1", g_uinfo_1.u_name);
-rinfo g_rinfo_2(102, "room_2", g_uinfo_2.u_name);
-rinfo g_rinfo_3(103, "room_3", g_uinfo_3.u_name);
+const rinfo g_rinfo_1(101, "room_1", g_uinfo_1.u_name);
+const rinfo g_rinfo_2(102, "room_2", g_uinfo_2.u_name);
+const rinfo g_rinfo_3(103, "room_3", g_uinfo_3.u_name);
 
 /* ====================================================================== */
 /* =============================== GTEST ================================ */
