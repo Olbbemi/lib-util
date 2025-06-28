@@ -54,7 +54,7 @@ struct rinfo
 class user_info : public util::base_node_c
 {
 	public:
-		user_info(const std::string& grp_name) // for dummy
+		explicit user_info(const std::string& grp_name) // for dummy
 			: util::base_node_c(grp_name), _user_name(""), _gender(""), _country(""), _address("") {}
 
 		user_info(const std::string& grp_name, int age, const std::string& name, const std::string& gender)
@@ -63,10 +63,12 @@ class user_info : public util::base_node_c
 		user_info(const std::string& grp_name, int age, const std::string& name, const std::string& gender, const std::string& country, const std::string& address)
 			: util::base_node_c(grp_name), _age(age), _user_name(name), _gender(gender), _country(country), _address(address) {}
 
+		user_info() = delete;
+
 	public:
-		int _age; 				// mandatory
+		int _age; 			    // mandatory
 		std::string _user_name; // mandatory
-		std::string _gender;	// mandatory
+		std::string _gender;    // mandatory
 		std::string _country;
 		std::string _address;
 };
