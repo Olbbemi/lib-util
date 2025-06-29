@@ -1,21 +1,23 @@
+#ifndef MEMORY_POOL_GTEST_CPP
+#define MEMORY_POOL_GTEST_CPP
+
 #include <gtest/gtest.h>
 #include <string>
 #include <memory>
-#include <thread>
 #include <random>
 
 #include "util_memory_pool.h"
 #include "util_memory_pool.hpp"
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/// DEFINE
-//////////////////////////////////////////////////////////////////////////////////////////////////
+/* ====================================================================== */
+/* ========================== DEFINE & ENUM ============================= */
+/* ====================================================================== */
 #define USER_GRP_NAME "USER"
 #define ROOM_GRP_NAME "ROOM"
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/// STRCUT
-//////////////////////////////////////////////////////////////////////////////////////////////////
+/* ====================================================================== */
+/* ========================== CLASS & STRUCT ============================ */
+/* ====================================================================== */
 struct uinfo
 {
 	int age;
@@ -49,13 +51,10 @@ struct rinfo
 		: id(id), r_name(r_name), host(host) {}
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/// CLASS
-//////////////////////////////////////////////////////////////////////////////////////////////////
 class user_info : public util::base_node_c
 {
 	public:
-		user_info(const std::string& grp_name) // for dummy
+		explicit user_info(const std::string& grp_name) // for dummy
 			: util::base_node_c(grp_name), _user_name(""), _gender(""), _country(""), _address("") {}
 
 		user_info(const std::string& grp_name, int age, const std::string& name, const std::string& gender)
@@ -64,10 +63,12 @@ class user_info : public util::base_node_c
 		user_info(const std::string& grp_name, int age, const std::string& name, const std::string& gender, const std::string& country, const std::string& address)
 			: util::base_node_c(grp_name), _age(age), _user_name(name), _gender(gender), _country(country), _address(address) {}
 
+		user_info() = delete;
+
 	public:
-		int _age; 				// mandatory
+		int _age;               // mandatory
 		std::string _user_name; // mandatory
-		std::string _gender;	// mandatory
+		std::string _gender;    // mandatory
 		std::string _country;
 		std::string _address;
 };
@@ -98,24 +99,24 @@ class room_info : public util::base_node_c
 		std::string _host;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/// GLOVAL VALUE
-//////////////////////////////////////////////////////////////////////////////////////////////////
-uinfo g_uinfo_1{10, "kim", "M", "", ""};
-uinfo g_uinfo_2{20, "lee", "W", "US", ""};
-uinfo g_uinfo_3{30, "jin", "W", "KR", "Busan"};
+/* ====================================================================== */
+/* ========================== GLOBAL & STATIC =========================== */
+/* ====================================================================== */
+const uinfo g_uinfo_1{10, "kim", "M", "", ""};
+const uinfo g_uinfo_2{20, "lee", "W", "US", ""};
+const uinfo g_uinfo_3{30, "jin", "W", "KR", "Busan"};
 
-sinfo g_sinfo_1{1, "sess_1", g_uinfo_1.u_name, "speaker"};
-sinfo g_sinfo_2{2, "sess_2", g_uinfo_2.u_name, "listener"};
-sinfo g_sinfo_3{3, "sess_3", g_uinfo_3.u_name, "-"};
+const sinfo g_sinfo_1{1, "sess_1", g_uinfo_1.u_name, "speaker"};
+const sinfo g_sinfo_2{2, "sess_2", g_uinfo_2.u_name, "listener"};
+const sinfo g_sinfo_3{3, "sess_3", g_uinfo_3.u_name, "-"};
 
-rinfo g_rinfo_1(101, "room_1", g_uinfo_1.u_name);
-rinfo g_rinfo_2(102, "room_2", g_uinfo_2.u_name);
-rinfo g_rinfo_3(103, "room_3", g_uinfo_3.u_name);
+const rinfo g_rinfo_1(101, "room_1", g_uinfo_1.u_name);
+const rinfo g_rinfo_2(102, "room_2", g_uinfo_2.u_name);
+const rinfo g_rinfo_3(103, "room_3", g_uinfo_3.u_name);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/// TEST CASE
-//////////////////////////////////////////////////////////////////////////////////////////////////
+/* ====================================================================== */
+/* =============================== GTEST ================================ */
+/* ====================================================================== */
 TEST(MemoryPoolTest, AllocWithVariableArg) 
 {
 	/*
@@ -302,10 +303,9 @@ TEST(MemoryPoolTest, MemoryAdjustInAlloc)
 	 */
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/// MAIN
-/////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
+
+#endif
