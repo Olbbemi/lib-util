@@ -9,22 +9,48 @@ namespace util
 /* ========================== CLASS & STRUCT ============================ */
 /* ====================================================================== */
 
+	/* <-- static singleton --> */
+	template <typename Class>
+	class static_singletonHolder_c
+	{
+	public:
+		static Class& get_instance();
+
+	public:
+		static_singletonHolder_c() = default;
+		~static_singletonHolder_c() = default;
+
+		static_singletonHolder_c(const static_singletonHolder_c& rhs) = delete;
+		static_singletonHolder_c& operator=(const static_singletonHolder_c& rhs) = delete;
+
+		static_singletonHolder_c(static_singletonHolder_c&& rhs) = delete;
+		static_singletonHolder_c& operator=(static_singletonHolder_c&& rhs) = delete;
+	};
+
+	template <typename Class>
+	Class& static_singletonHolder_c<Class>::get_instance()
+	{
+		static Class obj;
+		return obj;
+	}
+
+	/* <-- dynamic singleton --> */
 	template<typename Class>
-	class singleton_c
+	class dynamic_singletonHolder_c
 	{
 	public:
 		static Class* get_instance();
 		static bool release(Class* obj);
 
 	public:
-		singleton_c() = default;
-		~singleton_c() = default;
+		dynamic_singletonHolder_c() = default;
+		~dynamic_singletonHolder_c() = default;
 
-		singleton_c(const singleton_c& rhs) = delete;
-		singleton_c& operator=(const singleton_c& rhs) = delete;
+		dynamic_singletonHolder_c(const dynamic_singletonHolder_c& rhs) = delete;
+		dynamic_singletonHolder_c& operator=(const dynamic_singletonHolder_c& rhs) = delete;
 
-		singleton_c(singleton_c&& rhs) = delete;
-		singleton_c& operator=(singleton_c&& rhs) = delete;
+		dynamic_singletonHolder_c(dynamic_singletonHolder_c&& rhs) = delete;
+		dynamic_singletonHolder_c& operator=(dynamic_singletonHolder_c&& rhs) = delete;
 
 #ifdef UNIT_TEST
 		static bool is_released() {
@@ -38,33 +64,37 @@ namespace util
 	private:
 		static Class* _obj;
 		static std::mutex _mutex;
+		static std::uint32_t _use_cnt;
 	};
 
-	template<typename Class> 
-	Class* singleton_c<Class>::_obj = nullptr;
-
-	template <typename Class>
-	std::mutex singleton_c<Class>::_mutex;
+	template <typename Class> Class* dynamic_singletonHolder_c<Class>::_obj = nullptr;
+	template <typename Class> std::mutex dynamic_singletonHolder_c<Class>::_mutex;
+	template <typename Class> std::uint32_t dynamic_singletonHolder_c<Class>::_use_cnt = 0;
 
 	template<typename Class>
-	Class* singleton_c<Class>::get_instance()
+	Class* dynamic_singletonHolder_c<Class>::get_instance()
 	{
 		std::lock_guard<std::mutex> _guard(_mutex);
 		if(nullptr == _obj) {
 			_obj = new Class();		
 		}
 
+		_use_cnt++;
 		return _obj;
 	}
 
 	template<typename Class>
-	bool singleton_c<Class>::release(Class* obj)
+	bool dynamic_singletonHolder_c<Class>::release(Class* obj)
 	{
 		std::lock_guard<std::mutex> _guard(_mutex);
 		if(nullptr != obj && _obj == obj)
 		{
-			delete _obj;
-			_obj = nullptr;
+			_use_cnt--;
+			if(0 == _use_cnt)
+			{
+				delete _obj;
+				_obj = nullptr;
+			}
 
 			return true;
 		}
