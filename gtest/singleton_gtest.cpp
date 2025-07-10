@@ -9,12 +9,12 @@
 /* ====================================================================== */
 /* ========================== DEFINE & ENUM ============================= */
 /* ====================================================================== */
-#define TEST_DATA "test_data"
+const std::string TEST_DATA = "test_data";
 
 /* ====================================================================== */
 /* ========================== CLASS & STRUCT ============================ */
 /* ====================================================================== */
-class test_alpha : public util::singleton_c<test_alpha>
+class test_alpha : public util::dynamic_singletonHolder_c<test_alpha>
 {
 	public:
 		test_alpha() = default;
@@ -43,12 +43,39 @@ class test_beta
 /* ====================================================================== */
 /* =============================== GTEST ================================ */
 /* ====================================================================== */
-TEST(SingletonTest, IsA_SingletonClass) 
+TEST(SingletonTest, Check_Valid_StaticSingleton)
 {
-	/*
-	 * IS-A relation test
-	 */
+	test_beta& test_obj_1 = util::static_singletonHolder_c<test_beta>::get_instance();
+	test_beta& test_obj_2 = util::static_singletonHolder_c<test_beta>::get_instance();
 
+	test_obj_1.init(TEST_DATA);
+
+	EXPECT_STREQ(test_obj_1.get_data(), TEST_DATA.c_str());
+	EXPECT_STREQ(test_obj_1.get_data(), test_obj_2.get_data());
+}
+
+TEST(SingletonTest, Check_Valid_DynamicSingleton)
+{
+	test_beta* test_obj_1 = util::dynamic_singletonHolder_c<test_beta>::get_instance();
+	test_beta* test_obj_2 = util::dynamic_singletonHolder_c<test_beta>::get_instance();
+
+	test_obj_1->init(TEST_DATA);
+
+	EXPECT_STREQ(test_obj_1->get_data(), TEST_DATA.c_str());
+	EXPECT_STREQ(test_obj_1->get_data(), test_obj_2->get_data());
+
+	/**/
+	EXPECT_TRUE(util::dynamic_singletonHolder_c<test_beta>::release(test_obj_1));
+	EXPECT_FALSE(util::dynamic_singletonHolder_c<test_beta>::is_released());
+
+	/**/
+	EXPECT_TRUE(util::dynamic_singletonHolder_c<test_beta>::release(test_obj_2));
+	EXPECT_TRUE(util::dynamic_singletonHolder_c<test_beta>::is_released());
+}
+
+TEST(SingletonTest, IsA_DynamicSingletonClass)
+{
+	/* IS-A relation test */
 	test_alpha* test_obj_1 = test_alpha::get_instance();
 	ASSERT_NE(nullptr,  test_obj_1);	
 
@@ -57,29 +84,28 @@ TEST(SingletonTest, IsA_SingletonClass)
 
 	test_obj_1->init(TEST_DATA);
 	
-	EXPECT_STREQ(test_obj_1->get_data(), TEST_DATA);
+	EXPECT_STREQ(test_obj_1->get_data(), TEST_DATA.c_str());
 	EXPECT_STREQ(test_obj_1->get_data(), test_obj_2->get_data());
 
 	EXPECT_TRUE(test_alpha::release(test_obj_1));
+	EXPECT_TRUE(test_alpha::release(test_obj_2));
 	EXPECT_TRUE(test_alpha::is_released());
 }
 
-TEST(SingletonTest, HasA_SingletonClass) 
+TEST(SingletonTest, HasA_DynamicSingletonClass)
 {
-	/*
-	 * Has-A relation test
-	 */
-
-	test_beta* test_obj_1 = util::singleton_c<test_beta>::get_instance();
-	test_beta* test_obj_2 = util::singleton_c<test_beta>::get_instance();
+	/* Has-A relation test */
+	test_beta* test_obj_1 = util::dynamic_singletonHolder_c<test_beta>::get_instance();
+	test_beta* test_obj_2 = util::dynamic_singletonHolder_c<test_beta>::get_instance();
 
 	test_obj_1->init(TEST_DATA);
 
-	EXPECT_STREQ(test_obj_1->get_data(), TEST_DATA);
+	EXPECT_STREQ(test_obj_1->get_data(), TEST_DATA.c_str());
 	EXPECT_STREQ(test_obj_1->get_data(), test_obj_2->get_data());
 
-	EXPECT_TRUE(util::singleton_c<test_beta>::release(test_obj_1));
-	EXPECT_TRUE(util::singleton_c<test_beta>::is_released());
+	EXPECT_TRUE(util::dynamic_singletonHolder_c<test_beta>::release(test_obj_1));
+	EXPECT_TRUE(util::dynamic_singletonHolder_c<test_beta>::release(test_obj_2));
+	EXPECT_TRUE(util::dynamic_singletonHolder_c<test_beta>::is_released());
 }
 
 int main(int argc, char **argv) {

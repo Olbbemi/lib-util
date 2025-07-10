@@ -15,9 +15,7 @@ namespace util
 /* ========================== CLASS & STRUCT ============================ */
 /* ====================================================================== */
 
-	/*
-	 * if a particular class use this memory-pool, must inherit this class.
-	 */
+	/* if a particular class use this memory-pool, must inherit this class. */
 	class base_node_c
 	{
 	public:

@@ -12,8 +12,8 @@
 /* ====================================================================== */
 /* ========================== DEFINE & ENUM ============================= */
 /* ====================================================================== */
-#define USER_GRP_NAME "USER"
-#define ROOM_GRP_NAME "ROOM"
+const std::string USER_GRP_NAME = "USER";
+const std::string ROOM_GRP_NAME = "ROOM";
 
 /* ====================================================================== */
 /* ========================== CLASS & STRUCT ============================ */
@@ -54,7 +54,7 @@ struct rinfo
 class user_info : public util::base_node_c
 {
 	public:
-		explicit user_info(const std::string& grp_name) // for dummy
+		explicit user_info(const std::string& grp_name) /* for dummy */
 			: util::base_node_c(grp_name), _user_name(""), _gender(""), _country(""), _address("") {}
 
 		user_info(const std::string& grp_name, int age, const std::string& name, const std::string& gender)
