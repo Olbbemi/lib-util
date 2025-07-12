@@ -37,8 +37,7 @@ using EVENT_FD = int;
 		bool async_dispatch(Func&& func, Args&&... args)
 		{
 			// when shutdown flag is true, no more tasks should be enqueued.
-			bool shutdown = _shutdown.load();
-			if(true == shutdown)
+			if(bool shutdown = _shutdown.load(); true == shutdown)
 			{
 				U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] thread_pool is shutdown.", _identification);
 				return false;
