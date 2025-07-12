@@ -86,7 +86,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	spdlog::flush_every(std::chrono::milliseconds(500));
 
 	/* <-- CONSOLE --> */
-	if(console_sink_data_st* console_data = std::get_if<console_sink_data_st>(&sink_data); nullptr != console_data)
+	if(const console_sink_data_st* const console_data = std::get_if<console_sink_data_st>(&sink_data); nullptr != console_data)
 	{
 		_console_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
@@ -110,7 +110,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	}
 	
 	/* <-- ROTATE FILE --> */
-	if(rotate_file_sink_data_st* rotate_file_data = std::get_if<rotate_file_sink_data_st>(&sink_data); nullptr != rotate_file_data)
+	if(const rotate_file_sink_data_st* const rotate_file_data = std::get_if<rotate_file_sink_data_st>(&sink_data); nullptr != rotate_file_data)
 	{
 		_rotate_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
@@ -142,7 +142,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	}
 
 	/* <-- DAILY FILE --> */
-	if(daily_file_sink_data_st* daily_file_data = std::get_if<daily_file_sink_data_st>(&sink_data); nullptr != daily_file_data)
+	if(const daily_file_sink_data_st* const daily_file_data = std::get_if<daily_file_sink_data_st>(&sink_data); nullptr != daily_file_data)
 	{
 		_daily_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
