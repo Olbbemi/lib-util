@@ -115,16 +115,14 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal, uint1
 			});
 
 			// thread shutdown.
-			bool shutdown = _shutdown.load();
-			if(true == shutdown)
+			if(bool shutdown = _shutdown.load(); true == shutdown)
 			{
 				U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] consumer thread_id({}) is shutdown.", _identification, _id);
 				break;
 			}
 
 			// handle task.
-			bool ready_task = _ready_task.load();
-			if(false == ready_task)
+			if(bool ready_task = _ready_task.load(); false == ready_task)
 			{
 				U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING, "[{}] consumer thread_id({}) is wake up, but ready_task is false.", _identification, _id);
 				continue;
@@ -161,8 +159,7 @@ void thread_pool_c::_task_producer_thread()
 		static_assert(sizeof(value) == FD_EVENT_TYPE_SIZE, "[ERROR] value-size mismatch for write(event_fd). need_size: FD_EVENT_TYPE_SIZE");
 		ssize_t result = read(_event_fd, &value, sizeof(value));
 
-		bool shutdown = _shutdown.load();
-		if(true == shutdown)
+		if(bool shutdown = _shutdown.load(); true == shutdown)
 		{
 			U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] producer thread is shutdown.", _identification);
 			break;

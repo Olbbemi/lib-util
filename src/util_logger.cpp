@@ -46,8 +46,7 @@ static spdlog::level::level_enum convert_spdlog_level(const LOG_LEVEL level)
 /* =============== logger_mgr class =============== */
 bool logger_mgr::init_logger(const std::string& tag, std::vector<VARIANT_SINK>& vec_logger_data)
 {
-	std::set<std::string>::const_iterator find_iter = _tag_checker.find(tag);
-	if(find_iter == _tag_checker.end()) {
+	if(std::set<std::string>::const_iterator find_iter = _tag_checker.find(tag); find_iter == _tag_checker.end()) {
 		return false;
 	}
 
@@ -86,9 +85,8 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 {
 	spdlog::flush_every(std::chrono::milliseconds(500));
 
-	/**/
-	console_sink_data_st* console_data = std::get_if<console_sink_data_st>(&sink_data);
-	if(nullptr != console_data)
+	/* <-- CONSOLE --> */
+	if(const console_sink_data_st* const console_data = std::get_if<console_sink_data_st>(&sink_data); nullptr != console_data)
 	{
 		_console_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
@@ -96,13 +94,13 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
 		spdlog::level::level_enum spdlog_level = convert_spdlog_level(console_data->standard_level);
 
-		//
+		// create sink
 		auto console_sink_mt = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 		console_sink_mt->set_pattern(console_data->pattern);
 		console_sink_mt->set_level(spdlog_level);
 		dist_sink_mt->add_sink(console_sink_mt);
 
-		//
+		// create logger
 		_console_logger = std::make_shared<spdlog::async_logger>(logger_name, dist_sink_mt, _console_thread_pool, spdlog::async_overflow_policy::block);
 		_console_logger->set_level(spdlog_level);
 		_console_logger->flush_on(spdlog_level);
@@ -111,9 +109,8 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 		return true;
 	}
 	
-	/**/
-	rotate_file_sink_data_st* rotate_file_data = std::get_if<rotate_file_sink_data_st>(&sink_data);
-	if(nullptr != rotate_file_data)
+	/* <-- ROTATE FILE --> */
+	if(const rotate_file_sink_data_st* const rotate_file_data = std::get_if<rotate_file_sink_data_st>(&sink_data); nullptr != rotate_file_data)
 	{
 		_rotate_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
@@ -121,7 +118,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
 		spdlog::level::level_enum spdlog_level = convert_spdlog_level(rotate_file_data->standard_level);
 
-		//
+		// create sink
 		auto rotate_file_sink_mt = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(rotate_file_data->file_path, rotate_file_data->max_file_size, rotate_file_data->max_file_count, false);
 		rotate_file_sink_mt->set_pattern(rotate_file_data->pattern);
 		rotate_file_sink_mt->set_level(spdlog_level);
@@ -135,7 +132,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 			dist_sink_mt->add_sink(console_sink_mt);
 		}
 		
-		//
+		// create logger
 		_rotate_file_logger = std::make_shared<spdlog::async_logger>(logger_name, dist_sink_mt, _rotate_file_thread_pool, spdlog::async_overflow_policy::block);
 		_rotate_file_logger->set_level(spdlog_level);
 		_rotate_file_logger->flush_on(spdlog_level);
@@ -144,9 +141,8 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 		return true;
 	}
 
-	/**/
-	daily_file_sink_data_st* daily_file_data = std::get_if<daily_file_sink_data_st>(&sink_data);
-	if(nullptr != daily_file_data)
+	/* <-- DAILY FILE --> */
+	if(const daily_file_sink_data_st* const daily_file_data = std::get_if<daily_file_sink_data_st>(&sink_data); nullptr != daily_file_data)
 	{
 		_daily_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
@@ -154,7 +150,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
 		spdlog::level::level_enum spdlog_level = convert_spdlog_level(daily_file_data->standard_level);
 
-		//
+		// create sink
 		auto daily_file_sink_mt = std::make_shared<spdlog::sinks::daily_file_format_sink_mt>(daily_file_data->file_path, daily_file_data->rotation_hour, daily_file_data->rotation_minute, false, daily_file_data->max_file_count);
 		daily_file_sink_mt->set_pattern(daily_file_data->pattern);
 		daily_file_sink_mt->set_level(spdlog_level);
@@ -168,7 +164,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 			dist_sink_mt->add_sink(console_sink_mt);
 		}
 
-		//		
+		// create logger
 		_daily_file_logger = std::make_shared<spdlog::async_logger>(logger_name, dist_sink_mt, _daily_file_thread_pool, spdlog::async_overflow_policy::block);
 		_daily_file_logger->set_level(spdlog_level);
 		_daily_file_logger->flush_on(spdlog_level);
