@@ -176,7 +176,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	return false;
 }
 
-void logger_c::write_console_log(const LOG_LEVEL level, std::string log_str)
+void logger_c::write_console_log(const LOG_LEVEL level, const std::string& log_str) const
 {
 	if(nullptr == _console_logger)
 		return;
@@ -192,7 +192,7 @@ void logger_c::write_console_log(const LOG_LEVEL level, std::string log_str)
 	}
 }
 
-void logger_c::write_rotate_file_log(const LOG_LEVEL level, std::string log_str)
+void logger_c::write_rotate_file_log(const LOG_LEVEL level, const std::string& log_str) const
 {
 	if(nullptr == _rotate_file_logger)
 		return;
@@ -208,7 +208,7 @@ void logger_c::write_rotate_file_log(const LOG_LEVEL level, std::string log_str)
 	}
 }
 
-void logger_c::write_daily_file_log(const LOG_LEVEL level, std::string log_str)
+void logger_c::write_daily_file_log(const LOG_LEVEL level, const std::string& log_str) const
 {
 	if(nullptr == _daily_file_logger)
 		return;
