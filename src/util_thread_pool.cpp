@@ -16,9 +16,9 @@ typedef struct
 	uint16_t max;
 } monitoring;
 
-monitoring Green{1, 3};
-monitoring Yellow{4, 6};
-monitoring Red{7, 10};
+const monitoring Green{1, 3};
+const monitoring Yellow{4, 6};
+const monitoring Red{7, 10};
 
 /* ====================================================================== */
 /* ========================== CLASS & STRUCT ============================ */

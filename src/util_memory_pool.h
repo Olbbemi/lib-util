@@ -48,12 +48,12 @@ namespace util
 		template<typename U, typename... Args>
 		std::shared_ptr<U> alloc(const std::string& grp_name, Args... args);
 
-		uint32_t get_alloc_cnt() { return _mpool_alloc_cnt; };
+		uint32_t get_alloc_cnt() const { return _mpool_alloc_cnt; };
 	 	uint32_t get_pool_size(bool need_lock = false);
 		
-		uint64_t get_adjust_byte() { return _mpool_adjust_byte; };
-		uint64_t get_avail_max_byte() { return _mpool_avail_max_byte; };
-		uint64_t get_cur_byte() { return _mpool_cur_byte; };
+		uint64_t get_adjust_byte() const { return _mpool_adjust_byte; };
+		uint64_t get_avail_max_byte() const { return _mpool_avail_max_byte; };
+		uint64_t get_cur_byte() const { return _mpool_cur_byte; };
 
 	public:
 		memory_pool_c(const std::string& grp_name, uint32_t use_page_cnt = 1);

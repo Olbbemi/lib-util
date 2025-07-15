@@ -122,9 +122,9 @@ namespace util
 	public:
 		bool initialize(const std::string& tag, VARIANT_SINK& sink_data);
 		
-		void write_console_log(const LOG_LEVEL level, std::string log_str);
-		void write_rotate_file_log(const LOG_LEVEL level, std::string log_str);
-		void write_daily_file_log(const LOG_LEVEL level, std::string log_str);
+		void write_console_log(const LOG_LEVEL level, const std::string& log_str) const;
+		void write_rotate_file_log(const LOG_LEVEL level, const std::string& log_str) const;
+		void write_daily_file_log(const LOG_LEVEL level, const std::string& log_str) const;
 	
 		logger_c() = default;
 		~logger_c() = default;
