@@ -20,7 +20,7 @@ namespace util {
 /* ====================================================================== */
 /* ========================== DEFINE & ENUM ============================= */
 /* ====================================================================== */
-#define FD_EVENT_TYPE_SIZE 8
+const std::uint16_t FD_EVENT_TYPE_SIZE = 8;
 using EVENT_FD = std::int32_t;
 
 /* ====================================================================== */
@@ -28,11 +28,11 @@ using EVENT_FD = std::int32_t;
 /* ====================================================================== */
 
 class thread_pool_c {
- public:
-  bool create_pool(const std::string& identification, std::uint16_t max_cnt);
+public:
+  bool create_pool(const std::string &identification, std::uint16_t max_cnt);
 
   template <typename Func, typename... Args>
-  bool async_dispatch(Func&& func, Args&&... args) {
+  bool async_dispatch(Func &&func, Args &&...args) {
     // when shutdown flag is true, no more tasks should be enqueued.
     if (bool shutdown = _shutdown.load(); true == shutdown) {
       U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] thread_pool is shutdown.",
@@ -57,23 +57,23 @@ class thread_pool_c {
     return true;
   }
 
- public:
+public:
   thread_pool_c() = default;
   ~thread_pool_c();
 
-  thread_pool_c(const thread_pool_c&& rhs) = delete;
-  thread_pool_c& operator=(const thread_pool_c& rhs) = delete;
+  thread_pool_c(const thread_pool_c &&rhs) = delete;
+  thread_pool_c &operator=(const thread_pool_c &rhs) = delete;
 
-  thread_pool_c(thread_pool_c&& rhs) = delete;
-  thread_pool_c& operator=(thread_pool_c&& rhs) = delete;
+  thread_pool_c(thread_pool_c &&rhs) = delete;
+  thread_pool_c &operator=(thread_pool_c &&rhs) = delete;
 
- private:
+private:
   void _task_consumer_thread(std::promise<void> ready_signal,
                              std::uint16_t index);
   void _task_producer_thread();
   bool _check_exec_right_now();
 
- private:
+private:
   std::atomic_bool _shutdown;
   std::atomic_bool _ready_task;
   std::uint16_t _max_cnt;
@@ -91,6 +91,6 @@ class thread_pool_c {
 
   std::condition_variable _task_cv;
 };
-}  // namespace util
+} // namespace util
 
 #endif
