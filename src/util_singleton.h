@@ -1,6 +1,7 @@
 #ifndef UTIL_SINGLETON_H
 #define UTIL_SINGLETON_H
 
+#include <cstdint>
 #include <mutex>
 
 namespace util 
