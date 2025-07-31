@@ -1,7 +1,7 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v17.0.6 
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
     hooks:
-      - id: clang-format
-        args: [--style=file]
-        files: \.(cpp|c|h|hpp)$
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
