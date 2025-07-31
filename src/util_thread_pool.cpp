@@ -11,8 +11,7 @@ using namespace util;
 /* ====================================================================== */
 /* ========================== DEFINE & ENUM ============================= */
 /* ====================================================================== */
-typedef struct
-{
+typedef struct {
     std::uint16_t min;
     std::uint16_t max;
 } monitoring;
@@ -24,8 +23,7 @@ const monitoring Red{7, 10};
 /* ====================================================================== */
 /* ========================== CLASS & STRUCT ============================ */
 /* ====================================================================== */
-thread_pool_c::~thread_pool_c()
-{
+thread_pool_c::~thread_pool_c() {
     _shutdown.exchange(true);
 
     // awake producer thread.
@@ -35,17 +33,14 @@ thread_pool_c::~thread_pool_c()
                   "FD_EVENT_TYPE_SIZE");
     ssize_t result = write(_event_fd, &value, sizeof(value));
 
-    if (true == _task_producer.joinable())
-    {
+    if (true == _task_producer.joinable()) {
         _task_producer.join();
     }
 
     // awake consumer thread.
     _task_cv.notify_all();
-    for (auto &task_consumer : _task_consumer_pool)
-    {
-        if (true == task_consumer.joinable())
-        {
+    for (auto &task_consumer : _task_consumer_pool) {
+        if (true == task_consumer.joinable()) {
             task_consumer.join();
         }
     }
@@ -55,12 +50,11 @@ thread_pool_c::~thread_pool_c()
 }
 
 bool thread_pool_c::create_pool(const std::string &identification,
-                                std::uint16_t max_cnt)
-{
-    _shutdown = false;
-    _ready_task = false;
+                                std::uint16_t      max_cnt) {
+    _shutdown       = false;
+    _ready_task     = false;
     _identification = identification;
-    _max_cnt = max_cnt;
+    _max_cnt        = max_cnt;
 
     // create event_fd with semaphore option.
     _event_fd = eventfd(0, EFD_SEMAPHORE);
@@ -68,8 +62,7 @@ bool thread_pool_c::create_pool(const std::string &identification,
 
     // checking all consumer thread is ready.
     std::vector<std::future<void>> check_consumer_ready;
-    for (std::uint16_t idx = 0; idx < max_cnt; idx++)
-    {
+    for (std::uint16_t idx = 0; idx < max_cnt; idx++) {
         std::promise<void> ready_signal;
         check_consumer_ready.push_back(ready_signal.get_future());
 
@@ -79,15 +72,11 @@ bool thread_pool_c::create_pool(const std::string &identification,
     }
 
     _task_producer = std::thread(&thread_pool_c::_task_producer_thread, this);
-    for (auto &consumer_future : check_consumer_ready)
-    {
+    for (auto &consumer_future : check_consumer_ready) {
         if (std::future_status::ready ==
-            consumer_future.wait_for(std::chrono::milliseconds(500)))
-        {
+            consumer_future.wait_for(std::chrono::milliseconds(500))) {
             consumer_future.get();
-        }
-        else
-        {
+        } else {
             U_LOG_ROTATE_FILE(util::LOG_LEVEL::ERROR,
                               "[{}] partial consumer thread isn't ready.",
                               _identification);
@@ -102,9 +91,8 @@ bool thread_pool_c::create_pool(const std::string &identification,
 }
 
 void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal,
-                                          std::uint16_t index)
-{
-    auto _id = std::this_thread::get_id();
+                                          std::uint16_t      index) {
+    auto          _id = std::this_thread::get_id();
     std::uint16_t idx = index;
 
     {
@@ -116,24 +104,20 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal,
 
     // proceed task
     std::function<void()> task;
-    while (true)
-    {
+    while (true) {
         {
             std::unique_lock<std::mutex> lock_obj(_task_mutex);
 
             _consumer_mgr[_id].exchange(true);
-            _task_cv.wait(lock_obj,
-                          [&]()
-                          {
-                              bool shutdown = _shutdown.load();
-                              bool ready_task = _ready_task.load();
+            _task_cv.wait(lock_obj, [&]() {
+                bool shutdown   = _shutdown.load();
+                bool ready_task = _ready_task.load();
 
-                              return shutdown | ready_task;
-                          });
+                return shutdown | ready_task;
+            });
 
             // thread shutdown.
-            if (bool shutdown = _shutdown.load(); true == shutdown)
-            {
+            if (bool shutdown = _shutdown.load(); true == shutdown) {
                 U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG,
                                   "[{}] consumer thread_id({}) is shutdown.",
                                   _identification, _id);
@@ -141,8 +125,7 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal,
             }
 
             // handle task.
-            if (bool ready_task = _ready_task.load(); false == ready_task)
-            {
+            if (bool ready_task = _ready_task.load(); false == ready_task) {
                 U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING,
                                   "[{}] consumer thread_id({}) is wake up, but "
                                   "ready_task is false.",
@@ -178,10 +161,8 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal,
     }
 }
 
-void thread_pool_c::_task_producer_thread()
-{
-    while (true)
-    {
+void thread_pool_c::_task_producer_thread() {
+    while (true) {
         std::uint64_t value = 0;
         static_assert(
             sizeof(value) == FD_EVENT_TYPE_SIZE,
@@ -189,8 +170,7 @@ void thread_pool_c::_task_producer_thread()
             "FD_EVENT_TYPE_SIZE");
         ssize_t result = read(_event_fd, &value, sizeof(value));
 
-        if (bool shutdown = _shutdown.load(); true == shutdown)
-        {
+        if (bool shutdown = _shutdown.load(); true == shutdown) {
             U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG,
                               "[{}] producer thread is shutdown.",
                               _identification);
@@ -198,23 +178,19 @@ void thread_pool_c::_task_producer_thread()
         }
 
         std::uint16_t wait_cnt = 0;
-        std::int64_t wait_min_time_ms =
+        std::int64_t  wait_min_time_ms =
             std::numeric_limits<std::uint64_t>::max();
         std::int64_t wait_mean_time_ms = 0;
-        std::int64_t wait_max_time_ms = 0;
+        std::int64_t wait_max_time_ms  = 0;
 
-        while (true)
-        {
+        while (true) {
             std::int64_t total_elapse_time = 0;
-            for (auto &elapse_time : _consumer_elapsed_time)
-            {
-                if (elapse_time < wait_min_time_ms)
-                {
+            for (auto &elapse_time : _consumer_elapsed_time) {
+                if (elapse_time < wait_min_time_ms) {
                     wait_min_time_ms = elapse_time;
                 }
 
-                if (wait_max_time_ms < elapse_time)
-                {
+                if (wait_max_time_ms < elapse_time) {
                     wait_max_time_ms = elapse_time;
                 }
 
@@ -226,8 +202,7 @@ void thread_pool_c::_task_producer_thread()
                 static_cast<std::int64_t>(_consumer_elapsed_time.size());
 
             // try to awake consumer thread.
-            if (true == _check_exec_right_now())
-            {
+            if (true == _check_exec_right_now()) {
                 _ready_task.exchange(true);
                 _task_cv.notify_one();
                 break;
@@ -237,20 +212,13 @@ void thread_pool_c::_task_producer_thread()
             std::int64_t wait_time_ms = 0;
 
             // decide on sleep time.
-            if (Green.min <= wait_cnt && wait_cnt <= Green.max)
-            {
+            if (Green.min <= wait_cnt && wait_cnt <= Green.max) {
                 wait_time_ms = wait_min_time_ms;
-            }
-            else if (Yellow.min <= wait_cnt && wait_cnt <= Yellow.max)
-            {
+            } else if (Yellow.min <= wait_cnt && wait_cnt <= Yellow.max) {
                 wait_time_ms = wait_mean_time_ms;
-            }
-            else if (Red.min <= wait_cnt && wait_cnt <= Red.max)
-            {
+            } else if (Red.min <= wait_cnt && wait_cnt <= Red.max) {
                 wait_time_ms = wait_max_time_ms;
-            }
-            else
-            {
+            } else {
                 U_LOG_ROTATE_FILE(
                     util::LOG_LEVEL::CRITICAL,
                     "[{}] wait_cnt({}) is over the Red limit({}).",
@@ -263,13 +231,11 @@ void thread_pool_c::_task_producer_thread()
     }
 }
 
-bool thread_pool_c::_check_exec_right_now()
-{
+bool thread_pool_c::_check_exec_right_now() {
     std::lock_guard<std::mutex> _guard(_task_mutex);
 
     /* std::map<std::thread::id, std::atomic_bool> */
-    for (auto &consumer : _consumer_mgr)
-    {
+    for (auto &consumer : _consumer_mgr) {
         bool is_idle = consumer.second.load();
         if (true == is_idle)
             return true;
