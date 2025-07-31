@@ -4,34 +4,33 @@
 #include "util_logger.h"
 
 #include <atomic>
-#include <condition_variable>
 #include <cstdint>
-#include <functional>
+#include <condition_variable>
 #include <future>
+#include <functional>
 #include <mutex>
 #include <queue>
 #include <string>
-#include <sys/eventfd.h>
 #include <thread>
 #include <unistd.h>
+
+#include <sys/eventfd.h>
 
 namespace util
 {
     /* ====================================================================== */
     /* ========================== DEFINE & ENUM ============================= */
     /* ====================================================================== */
-    const std::uint16_t FD_EVENT_TYPE_SIZE = 8;
     using EVENT_FD                         = std::int32_t;
+    const std::uint16_t FD_EVENT_TYPE_SIZE = 8;
 
     /* ====================================================================== */
     /* ========================== CLASS & STRUCT ============================ */
     /* ====================================================================== */
-
     class thread_pool_c
     {
     public:
-        bool create_pool(
-        const std::string& identification, std::uint16_t max_cnt);
+        bool create_pool(const std::string& identification, std::uint16_t max_cnt);
 
         template <typename Func, typename... Args>
         bool async_dispatch(Func&& func, Args&&... args)
@@ -39,15 +38,12 @@ namespace util
             // when shutdown flag is true, no more tasks should be enqueued.
             if(bool shutdown = _shutdown.load(); true == shutdown)
             {
-                U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG,
-                "[{}] thread_pool is shutdown.",
-                _identification);
+                U_LOG_ROTATE_FILE(util::LOG_LEVEL::DEBUG, "[{}] thread_pool is shutdown.", _identification);
                 return false;
             }
 
             // make task with function and variable.
-            auto task =
-            std::bind(std::forward<Func>(func), std::forward<Args>(args)...);
+            auto task = std::bind(std::forward<Func>(func), std::forward<Args>(args)...);
 
             {
                 std::lock_guard<std::mutex> lock_obj(_task_mutex);
@@ -56,10 +52,13 @@ namespace util
 
             // awake producer thread with event_fd.
             std::uint64_t value = 1;
-            static_assert(sizeof(value) == FD_EVENT_TYPE_SIZE,
-            "[ERROR] value-size mismatch for write(event_fd). need_size: FD_EVENT_TYPE_SIZE");
+            static_assert(sizeof(value) == FD_EVENT_TYPE_SIZE, "[ERROR] value-size mismatch for write(event_fd). need_size: FD_EVENT_TYPE_SIZE");
 
             ssize_t result = write(_event_fd, &value, sizeof(value));
+			if(FD_EVENT_TYPE_SIZE != result) {
+				U_LOG_ROTATE_FILE(util::LOG_LEVEL::ERROR, "write() is weird. return_value: {}.", result);
+			}
+
             return true;
         }
 
@@ -74,8 +73,7 @@ namespace util
         thread_pool_c& operator=(thread_pool_c&& rhs) = delete;
 
     private:
-        void _task_consumer_thread(
-        std::promise<void> ready_signal, std::uint16_t index);
+        void _task_consumer_thread(std::promise<void> ready_signal, std::uint16_t index);
         void _task_producer_thread();
         bool _check_exec_right_now();
 
