@@ -2,7 +2,7 @@
 #define MEMORY_POOL_HPP
 #include <functional>
 
-//#include  "util_logger.h"
+#include "util_logger.h"
 #include "util_memory_pool.h"
 
 using namespace util;
@@ -10,7 +10,6 @@ using namespace util;
 /* ====================================================================== */
 /* ========================== CLASS & STRUCT ============================ */
 /* ====================================================================== */
-
 template <typename U>
 void memory_pool_c::_free(U* obj)
 {
@@ -19,7 +18,7 @@ void memory_pool_c::_free(U* obj)
 	base_node_c* base_obj = static_cast<base_node_c*>(obj);
 	if(0 != base_obj->_grp_name.compare(_grp_name))
 	{
-		// error
+		U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING, "grp_name is weird. pivot-grp_name:{}/param-grp_name:{}", _grp_name, base_obj->_grp_name);
 		return;
 	}
 
@@ -32,9 +31,8 @@ void memory_pool_c::_free(U* obj)
 	_mpool.insert(std::make_pair(obj_size, base_obj));
 
 	_mpool_alloc_cnt--;
-	if (_mpool_alloc_cnt < 0)
-	{
-		// weird
+	if (_mpool_alloc_cnt < 0) {
+		U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING, "_mpool_alloc_cnt is negative number. grp_name:{}/alloc_cnt:{}", _grp_name, _mpool_alloc_cnt);
 	}
 }
 
@@ -46,13 +44,14 @@ std::shared_ptr<U> memory_pool_c::alloc(const std::string& grp_name, Args... arg
 
 	if(0 != _grp_name.compare(grp_name))
 	{
-		// error
+		U_LOG_ROTATE_FILE(util::LOG_LEVEL::WARNING, "grp_name is weird. pivot-grp_name:{}/param-grp_name:{}", _grp_name, grp_name);
 		return nullptr;
 	}
 
-	if(nullptr == _last_ptr)
+	if(nullptr == _base_ptr || false == _check_mprotect)
 	{
-		// error
+		U_LOG_ROTATE_FILE(util::LOG_LEVEL::ERROR, "base_ptr is nullptr. OR check_mprotect is false. grp_name:{}/base_ptr:{}/check_mprotect:{}"
+				, _grp_name, _base_ptr == nullptr ? "T" : "F", _check_mprotect == true ? "T" : "F");
 		return nullptr;
 	}
 
@@ -61,7 +60,7 @@ std::shared_ptr<U> memory_pool_c::alloc(const std::string& grp_name, Args... arg
 
 	if(_mpool_avail_max_byte < _mpool_cur_byte + obj_size)
 	{
-		// warn
+		U_LOG_ROTATE_FILE(util::LOG_LEVEL::CRITICAL, "can't alloc memory in {}. max_byte:{}/cur_alloc_byte:{}/req_byte:{}", _grp_name, _mpool_avail_max_byte, _mpool_cur_byte, obj_size);
 		return nullptr;
 	}
 
@@ -72,13 +71,15 @@ std::shared_ptr<U> memory_pool_c::alloc(const std::string& grp_name, Args... arg
 		auto find_iter = _mpool.find(obj_size);
 		if(_mpool.end() == find_iter)
 		{
-			base_node = reinterpret_cast<base_node_c*>(_last_ptr);
-			uint32_t adjust_size = 0;
-			uint32_t os_byte = _get_osBit();
+			uint32_t adjust_size            = 0;
+			base_node                       = reinterpret_cast<base_node_c*>(_last_ptr);
+			constexpr std::uint32_t os_byte = _get_osBit();
+
 			if(obj_size % os_byte != 0)
 			{
-				uint32_t quotient = obj_size / os_byte;
-				adjust_size = (quotient + 1) * os_byte;
+				std::uint32_t quotient = obj_size / os_byte;
+				adjust_size            = (quotient + 1) * os_byte;
+
 				_mpool_adjust_byte += (adjust_size - obj_size);
 			}
 

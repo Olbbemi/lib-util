@@ -1,21 +1,22 @@
 #include "util_logger.h"
 
 #include <chrono>
+
+#include <spdlog/async_logger.h>
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
-#include <spdlog/async_logger.h>
+#include <spdlog/details/thread_pool.h>
 #include <spdlog/sinks/dist_sink.h>
 #include <spdlog/sinks/daily_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/details/thread_pool.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 using namespace util;
 
 /* ====================================================================== */
 /* ========================== DEFINE & ENUM ============================= */
 /* ====================================================================== */
-const std::uint16_t Q_SIZE = 8192;
+const std::uint16_t Q_SIZE     = 8192;
 const std::uint16_t THREAD_CNT = 1;
 
 /* ====================================================================== */
@@ -42,7 +43,6 @@ static spdlog::level::level_enum convert_spdlog_level(const LOG_LEVEL level)
 /* ====================================================================== */
 /* ========================== CLASS & STRUCT ============================ */
 /* ====================================================================== */
-
 /* =============== logger_mgr class =============== */
 bool logger_mgr::init_logger(const std::string& tag, std::vector<VARIANT_SINK>& vec_logger_data)
 {
@@ -50,7 +50,7 @@ bool logger_mgr::init_logger(const std::string& tag, std::vector<VARIANT_SINK>& 
 		return false;
 	}
 
-	std::unique_ptr<logger_c> logger_obj = std::make_unique<logger_c>();
+	auto logger_obj = std::make_unique<logger_c>();
 	for(auto& _data : vec_logger_data)
 	{
 		bool result = logger_obj->initialize(tag, _data);
@@ -59,7 +59,7 @@ bool logger_mgr::init_logger(const std::string& tag, std::vector<VARIANT_SINK>& 
 		}
 	}
 
-	_map_logger_obj.insert(std::make_pair(tag, std::move(logger_obj)));
+	_map_logger_obj.emplace(tag, std::move(logger_obj));
 	return true;
 }
 
@@ -90,8 +90,8 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	{
 		_console_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
-		std::string logger_name = tag + std::string("_console");
-		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
+		std::string logger_name                = tag + std::string("_console");
+		auto dist_sink_mt                      = std::make_shared<spdlog::sinks::dist_sink_mt>();
 		spdlog::level::level_enum spdlog_level = convert_spdlog_level(console_data->standard_level);
 
 		// create sink
@@ -108,14 +108,14 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 		spdlog::register_logger(_console_logger);
 		return true;
 	}
-	
+
 	/* <-- ROTATE FILE --> */
 	if(const rotate_file_sink_data_st* const rotate_file_data = std::get_if<rotate_file_sink_data_st>(&sink_data); nullptr != rotate_file_data)
 	{
 		_rotate_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
-		std::string logger_name = tag + std::string("_rotate_file");
-		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
+		std::string logger_name                = tag + std::string("_rotate_file");
+		auto dist_sink_mt                      = std::make_shared<spdlog::sinks::dist_sink_mt>();
 		spdlog::level::level_enum spdlog_level = convert_spdlog_level(rotate_file_data->standard_level);
 
 		// create sink
@@ -131,7 +131,7 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 			console_sink_mt->set_level(spdlog_level);
 			dist_sink_mt->add_sink(console_sink_mt);
 		}
-		
+
 		// create logger
 		_rotate_file_logger = std::make_shared<spdlog::async_logger>(logger_name, dist_sink_mt, _rotate_file_thread_pool, spdlog::async_overflow_policy::block);
 		_rotate_file_logger->set_level(spdlog_level);
@@ -146,8 +146,8 @@ bool logger_c::initialize(const std::string& tag, VARIANT_SINK& sink_data)
 	{
 		_daily_file_thread_pool = std::make_shared<spdlog::details::thread_pool>(Q_SIZE, THREAD_CNT);
 
-		std::string logger_name = tag + std::string("_daily_file");
-		auto dist_sink_mt = std::make_shared<spdlog::sinks::dist_sink_mt>();
+		std::string logger_name                = tag + std::string("_daily_file");
+		auto dist_sink_mt                      = std::make_shared<spdlog::sinks::dist_sink_mt>();
 		spdlog::level::level_enum spdlog_level = convert_spdlog_level(daily_file_data->standard_level);
 
 		// create sink
@@ -181,7 +181,7 @@ void logger_c::write_console_log(const LOG_LEVEL level, const std::string& log_s
 	if(nullptr == _console_logger)
 		return;
 
-	switch (level) 
+	switch (level)
 	{
 		case LOG_LEVEL::TRACE: 		_console_logger->trace(log_str);	break;
 		case LOG_LEVEL::DEBUG:		_console_logger->debug(log_str);	break;
@@ -197,7 +197,7 @@ void logger_c::write_rotate_file_log(const LOG_LEVEL level, const std::string& l
 	if(nullptr == _rotate_file_logger)
 		return;
 
-	switch (level) 
+	switch (level)
 	{
 		case LOG_LEVEL::TRACE: 		_rotate_file_logger->trace(log_str);    break;
 		case LOG_LEVEL::DEBUG:		_rotate_file_logger->debug(log_str);    break;
@@ -213,7 +213,7 @@ void logger_c::write_daily_file_log(const LOG_LEVEL level, const std::string& lo
 	if(nullptr == _daily_file_logger)
 		return;
 
-	switch (level) 
+	switch (level)
 	{
 		case LOG_LEVEL::TRACE: 		_daily_file_logger->trace(log_str);    break;
 		case LOG_LEVEL::DEBUG:		_daily_file_logger->debug(log_str);    break;
