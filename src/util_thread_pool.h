@@ -68,9 +68,8 @@ namespace util
 
         thread_pool_c(const thread_pool_c&& rhs)           = delete;
         thread_pool_c& operator=(const thread_pool_c& rhs) = delete;
-
-        thread_pool_c(thread_pool_c&& rhs)            = delete;
-        thread_pool_c& operator=(thread_pool_c&& rhs) = delete;
+        thread_pool_c(thread_pool_c&& rhs)                 = delete;
+        thread_pool_c& operator=(thread_pool_c&& rhs)      = delete;
 
     private:
         void _task_consumer_thread(std::promise<void> ready_signal, std::uint16_t index);

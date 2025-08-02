@@ -149,7 +149,7 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal, std::
         auto end_time = std::chrono::system_clock::now();
 
         // calc elpased time for the task.
-        auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - begin_time);
+        auto elapsed_time           = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - begin_time);
         _consumer_elapsed_time[idx] = elapsed_time.count();
     }
 }
@@ -174,8 +174,8 @@ void thread_pool_c::_task_producer_thread()
             break;
         }
 
-        std::uint16_t wait_cnt = 0;
-        std::int64_t  wait_min_time_ms = std::numeric_limits<std::uint64_t>::max();
+        std::uint16_t wait_cnt          = 0;
+        std::int64_t  wait_min_time_ms  = std::numeric_limits<std::uint64_t>::max();
         std::int64_t  wait_mean_time_ms = 0;
         std::int64_t  wait_max_time_ms  = 0;
 
