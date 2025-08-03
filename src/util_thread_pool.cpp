@@ -9,11 +9,11 @@ using namespace util;
 /* ====================================================================== */
 /* ========================== DEFINE & ENUM ============================= */
 /* ====================================================================== */
-typedef struct
+struct monitoring
 {
     std::uint16_t min;
     std::uint16_t max;
-} monitoring;
+};
 
 const monitoring Green{1, 3};
 const monitoring Yellow{4, 6};

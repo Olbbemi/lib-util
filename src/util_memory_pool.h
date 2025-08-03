@@ -20,10 +20,9 @@ namespace util
 	public:
 		friend class memory_pool_c;
 
-		base_node_c(const std::string& grp_name) : _grp_name(grp_name) {};
+		explicit base_node_c(const std::string& grp_name) : _grp_name(grp_name) {};
 		virtual ~base_node_c() = default;
 
-	public:
 		base_node_c()                                  = delete;
 		base_node_c(const base_node_c& rsh)            = delete;
 		base_node_c& operator=(const base_node_c& rhs) = delete;
@@ -66,7 +65,6 @@ namespace util
 		static std::uint32_t _get_pageSize();
 		static constexpr std::uint32_t _get_osBit() { return sizeof(void*); }
 
-	private:
 		template<typename U>
 		void _free(U* obj);
 
