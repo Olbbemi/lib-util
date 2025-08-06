@@ -9,11 +9,11 @@ using namespace util;
 /* ====================================================================== */
 /* ========================== DEFINE & ENUM ============================= */
 /* ====================================================================== */
-typedef struct
+struct monitoring
 {
     std::uint16_t min;
     std::uint16_t max;
-} monitoring;
+};
 
 const monitoring Green{1, 3};
 const monitoring Yellow{4, 6};
@@ -114,7 +114,7 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal, std::
                 	bool shutdown   = _shutdown.load();
                 	bool ready_task = _ready_task.load();
 
-                	return shutdown | ready_task;
+                	return shutdown || ready_task;
             	});
 
             // thread shutdown.
