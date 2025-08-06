@@ -27,7 +27,7 @@ namespace util
 		std::int32_t fd;
 		void* user_data;
 
-		ev_result(EV_TYPE ev_type_, std::int32_t fd_, void* user_data_)
+		explicit ev_result(EV_TYPE ev_type_, std::int32_t fd_, void* user_data_)
 			: ev_type(ev_type_), fd(fd_), user_data(user_data_) {}
 	};
 

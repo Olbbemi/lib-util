@@ -114,7 +114,7 @@ void thread_pool_c::_task_consumer_thread(std::promise<void> ready_signal, std::
                 	bool shutdown   = _shutdown.load();
                 	bool ready_task = _ready_task.load();
 
-                	return shutdown | ready_task;
+                	return shutdown || ready_task;
             	});
 
             // thread shutdown.

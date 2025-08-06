@@ -106,15 +106,15 @@ std::vector<ev_result> epoll_c::wait_event()
 		std::int32_t ev_fd     = events[idx].data.fd;
 		std::uint32_t ev_event = events[idx].events;
 
-		if(EPOLLIN == ev_event || EPOLLHUP == ev_event)
+		if(true == (EPOLLIN & ev_event) || true == (EPOLLHUP & ev_event))
 		{
-			if(EPOLLHUP == ev_event) {
+			if(true == (EPOLLHUP & ev_event)) {
 				U_LOG_ROTATE_FILE(util::LOG_LEVEL::INFO, "event_type is Hangup. fd:{}", ev_fd);
 			}
 
 			vec_ev_result.emplace_back(EV_TYPE::EV_TYPE_READ, ev_fd, ev_user_data);
 		}
-		else if(EPOLLOUT == ev_event) {
+		else if(true == (EPOLLOUT & ev_event)) {
 			vec_ev_result.emplace_back(EV_TYPE::EV_TYPE_WRITE, ev_fd, ev_user_data);
 		}
 		else {
